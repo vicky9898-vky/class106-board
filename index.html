@@ -47,7 +47,7 @@
                         一年六班 親師聯絡布告欄
                     </h1>
                     <p class="text-xs text-amber-700/80 font-bold flex items-center gap-2 mt-0.5">
-                        <span>💬 吳慧老師的親師溫馨園地</span>
+                        <span>💬 有任何問題都可以詢問旻慧老師唷！</span>
                         <span id="cloudStatus" class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
                             🟢 雲端同步中
                         </span>
@@ -62,7 +62,7 @@
     </header>
 
     <main class="max-w-5xl mx-auto px-4 mt-6">
-        <!-- 分頁選單 (可愛圓角卡片) -->
+        <!-- 分頁選單 -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
             <button onclick="switchCategory('contact')" id="btn-contact" class="tab-btn active p-4 rounded-3xl bg-white border-2 border-amber-100 text-left flex items-center gap-3 shadow-sm">
                 <div class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-500 flex items-center justify-center text-xl font-bold">📖</div>
@@ -97,7 +97,7 @@
             </button>
         </div>
 
-        <!-- 區塊1: 每日聯絡本 (包含月曆查詢與卡片開關) -->
+        <!-- 區塊1: 每日聯絡本 -->
         <div id="sec-contact" class="tab-content bg-sky-400 rounded-[2.5rem] p-6 text-white shadow-xl mb-8 relative overflow-hidden">
             <div class="absolute -right-6 -bottom-6 text-9xl opacity-20 pointer-events-none">🐾</div>
             
@@ -106,20 +106,17 @@
                     <span class="text-4xl">🐻</span>
                     <div>
                         <h2 class="text-2xl font-black tracking-wide">一年六班 每日聯絡本</h2>
-                        <!-- 三、歷史聯絡本日期選擇器 -->
                         <div class="flex items-center gap-2 mt-1">
                             <span class="text-xs font-bold text-sky-100">📅 選擇日期：</span>
                             <input type="date" id="contactDatePicker" onchange="loadContactByDate(this.value)" class="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full border border-white/40 focus:outline-none focus:bg-white focus:text-sky-900">
                         </div>
                     </div>
                 </div>
-                <!-- 老師編輯按鈕 -->
                 <button onclick="openContactModal()" class="admin-only hidden bg-amber-300 hover:bg-amber-400 text-amber-950 font-black px-5 py-2.5 rounded-2xl text-sm transition shadow-md flex items-center gap-2">
                     <i class="fa-solid fa-pen-to-square"></i> 更新本日聯絡本
                 </button>
             </div>
 
-            <!-- 聯絡本主要內容 -->
             <div class="bg-white rounded-3xl p-6 text-gray-800 space-y-6 shadow-inner">
                 <div>
                     <h3 class="font-black text-sky-600 flex items-center gap-2 mb-2 text-lg">
@@ -128,7 +125,6 @@
                     <div id="homeworkContent" class="text-gray-700 font-medium whitespace-pre-line leading-relaxed pl-6">載入中...</div>
                 </div>
 
-                <!-- 四、可依照需求保留或隱藏的學用品 -->
                 <div id="sec-bring-box">
                     <hr class="border-sky-100 mb-6">
                     <h3 class="font-black text-amber-600 flex items-center gap-2 mb-2 text-lg">
@@ -137,7 +133,6 @@
                     <div id="bringContent" class="text-gray-700 font-medium whitespace-pre-line leading-relaxed pl-6">尚無帶物品提醒。</div>
                 </div>
 
-                <!-- 四、可依照需求保留或隱藏的小叮嚀 -->
                 <div id="sec-note-box">
                     <hr class="border-sky-100 mb-6">
                     <h3 class="font-black text-emerald-600 flex items-center gap-2 mb-2 text-lg">
@@ -148,7 +143,7 @@
             </div>
         </div>
 
-        <!-- 區塊2: 校內公告 (包含處室分類標籤 + 圖片圖片與網址預覽) -->
+        <!-- 區塊2: 校內公告 (四處室) -->
         <div id="sec-announcement" class="tab-content hidden bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-amber-100/80 mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-black text-amber-900 flex items-center gap-2">
@@ -178,7 +173,7 @@
             </div>
         </div>
 
-        <!-- 區塊4: 學生常用網站 (二、支援自訂圖示與小備註) -->
+        <!-- 區塊4: 學生常用網站 -->
         <div id="sec-website" class="tab-content hidden bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-amber-100/80 mb-8">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-xl font-black text-amber-900 flex items-center gap-2">
@@ -206,11 +201,11 @@
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-amber-800 mb-1">Email 帳號</label>
-                    <input type="email" id="loginEmail" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400" placeholder="your-email@gmail.com">
+                    <input type="email" id="loginEmail" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-amber-800 mb-1">登入密碼</label>
-                    <input type="password" id="loginPassword" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400" placeholder="••••••••">
+                    <input type="password" id="loginPassword" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
                 </div>
                 <button onclick="loginTeacher()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl transition shadow">
                     確認登入
@@ -256,58 +251,60 @@
         </div>
     </div>
 
-    <!-- Modal 3: 新增公告/提醒彈窗 (含處室與圖片網址) -->
+    <!-- Modal 3: 新增/編輯公告與提醒彈窗 (四處室) -->
     <div id="noticeModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-amber-100">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-amber-100 max-h-[90vh] overflow-y-auto">
             <button onclick="closeNoticeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             <h3 id="noticeModalTitle" class="text-xl font-black text-amber-900 mb-4">📢 發布公告</h3>
             
             <div class="space-y-4">
+                <input type="hidden" id="noticeDocId">
                 <input type="hidden" id="noticeType">
+                
                 <div id="deptSelectBox">
-                    <label class="block text-xs font-bold text-amber-800 mb-1">發布處室 / 類別</label>
+                    <label class="block text-xs font-bold text-amber-800 mb-1">發布處室</label>
                     <select id="noticeDept" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm font-bold">
-                        <option value="一年六班">一年六班</option>
                         <option value="教務處">教務處</option>
                         <option value="學務處">學務處</option>
-                        <option value="總務處">總務處</option>
                         <option value="輔導室">輔導室</option>
+                        <option value="總務處">總務處</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">公告標題</label>
-                    <input type="text" id="noticeTitle" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="請輸入標題">
+                    <label class="block text-xs font-bold text-amber-800 mb-1">標題</label>
+                    <input type="text" id="noticeTitle" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">公告內容</label>
-                    <textarea id="noticeContent" rows="3" class="w-full border-2 border-amber-100 rounded-xl p-2 text-sm" placeholder="請輸入詳細說明"></textarea>
+                    <label class="block text-xs font-bold text-amber-800 mb-1">詳細內容</label>
+                    <textarea id="noticeContent" rows="3" class="w-full border-2 border-amber-100 rounded-xl p-2 text-sm"></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">🖼️ 附加圖片網址 (可選)</label>
-                    <input type="url" id="noticeImgUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://example.com/image.jpg">
+                    <label class="block text-xs font-bold text-amber-800 mb-1">🖼️ 附加圖片網址 (選填)</label>
+                    <input type="url" id="noticeImgUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://...">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">🔗 附加預覽網址 (可選)</label>
-                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://example.com">
+                    <label class="block text-xs font-bold text-amber-800 mb-1">🔗 附加預覽網址 (選填)</label>
+                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://...">
                 </div>
-                <button onclick="saveNotice()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl shadow">確認發布</button>
+                <button onclick="saveNotice()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl shadow">確認儲存發布</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 4: 新增常用網站彈窗 -->
+    <!-- Modal 4: 新增/編輯常用網站彈窗 -->
     <div id="websiteModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border-4 border-purple-100">
             <button onclick="closeWebsiteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 class="text-xl font-black text-purple-900 mb-4">🌐 新增常用網站</h3>
+            <h3 id="webModalTitle" class="text-xl font-black text-purple-900 mb-4">🌐 新增常用網站</h3>
             <div class="space-y-4">
+                <input type="hidden" id="webDocId">
                 <div>
                     <label class="block text-xs font-bold text-purple-800 mb-1">網站名稱</label>
-                    <input type="text" id="webName" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm" placeholder="例如：均一教育平台">
+                    <input type="text" id="webName" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-purple-800 mb-1">網站網址 (URL)</label>
-                    <input type="url" id="webUrl" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm" placeholder="https://...">
+                    <input type="url" id="webUrl" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-purple-800 mb-1">選擇圖示 Emoji</label>
@@ -321,16 +318,16 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-purple-800 mb-1">小備註說明功能</label>
-                    <input type="text" id="webNote" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm" placeholder="例如：提供數學免費影片教學">
+                    <input type="text" id="webNote" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
                 </div>
-                <button onclick="saveWebsite()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-2.5 rounded-xl shadow">新增推薦網站</button>
+                <button onclick="saveWebsite()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-2.5 rounded-xl shadow">儲存網站資訊</button>
             </div>
         </div>
     </div>
 
     <!-- 腳本邏輯區塊 -->
     <script>
-        // 1. Firebase 專屬設定
+        // 1. Firebase 初始化
         const firebaseConfig = {
             apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
             authDomain: "class106-board.firebaseapp.com",
@@ -344,11 +341,9 @@
         const db = firebase.firestore();
         const auth = firebase.auth();
 
-        // 預設今日日期格式化 YYYY-MM-DD
         const getTodayStr = () => new Date().toISOString().split('T')[0];
         document.getElementById('contactDatePicker').value = getTodayStr();
 
-        // 切換分頁
         function switchCategory(cat) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
@@ -360,7 +355,7 @@
             if (targetSec) targetSec.classList.remove('hidden');
         }
 
-        // Auth 登入邏輯
+        // Auth 登入控制
         function toggleAuthModal() {
             if (auth.currentUser) {
                 if (confirm("確定要登出教師管理身分嗎？")) auth.signOut();
@@ -392,13 +387,12 @@
             }
         });
 
-        // 聯絡本：歷史查詢與資料載入
+        // 每日聯絡本邏輯
         function loadContactByDate(dateStr) {
             db.collection('contact_history').doc(dateStr).get().then(doc => {
                 if (doc.exists) {
                     renderContactUI(doc.data());
                 } else if (dateStr === getTodayStr()) {
-                    // 若今日尚無寫入，嘗試讀預設
                     document.getElementById('homeworkContent').innerText = "今日尚無聯絡本項目。";
                     document.getElementById('sec-bring-box').classList.add('hidden');
                     document.getElementById('sec-note-box').classList.add('hidden');
@@ -412,7 +406,6 @@
 
         function renderContactUI(data) {
             document.getElementById('homeworkContent').innerText = data.homework || '無作業';
-            
             const bringBox = document.getElementById('sec-bring-box');
             if (data.showBring) {
                 bringBox.classList.remove('hidden');
@@ -432,7 +425,6 @@
 
         loadContactByDate(getTodayStr());
 
-        // 聯絡本彈窗與儲存
         function openContactModal() {
             document.getElementById('modalContactDate').value = document.getElementById('contactDatePicker').value;
             document.getElementById('contactModal').classList.remove('hidden');
@@ -458,87 +450,164 @@
             });
         }
 
-        // 公告與小提醒 Modal 控制與即時同步
-        function openNoticeModal(type) {
+        // 公告與提醒管理 (新增/編輯/刪除)
+        function openNoticeModal(type, docId = null) {
+            document.getElementById('noticeDocId').value = docId || '';
             document.getElementById('noticeType').value = type;
             document.getElementById('deptSelectBox').style.display = type === 'announcement' ? 'block' : 'none';
-            document.getElementById('noticeModalTitle').innerText = type === 'announcement' ? '📢 發布校內公告' : '💌 新增老師小提醒';
+            
+            if (docId) {
+                document.getElementById('noticeModalTitle').innerText = '✏️ 編輯項目';
+                const collection = type === 'announcement' ? 'announcements' : 'reminders';
+                db.collection(collection).doc(docId).get().then(doc => {
+                    const d = doc.data();
+                    if (type === 'announcement') document.getElementById('noticeDept').value = d.dept || '教務處';
+                    document.getElementById('noticeTitle').value = d.title || '';
+                    document.getElementById('noticeContent').value = d.content || '';
+                    document.getElementById('noticeImgUrl').value = d.imgUrl || '';
+                    document.getElementById('noticeLinkUrl').value = d.linkUrl || '';
+                });
+            } else {
+                document.getElementById('noticeModalTitle').innerText = type === 'announcement' ? '📢 發布校內公告' : '💌 新增老師小提醒';
+                document.getElementById('noticeTitle').value = '';
+                document.getElementById('noticeContent').value = '';
+                document.getElementById('noticeImgUrl').value = '';
+                document.getElementById('noticeLinkUrl').value = '';
+            }
             document.getElementById('noticeModal').classList.remove('hidden');
         }
         function closeNoticeModal() { document.getElementById('noticeModal').classList.add('hidden'); }
 
         function saveNotice() {
+            const docId = document.getElementById('noticeDocId').value;
             const type = document.getElementById('noticeType').value;
             const collection = type === 'announcement' ? 'announcements' : 'reminders';
             
-            db.collection(collection).add({
+            const payload = {
                 dept: type === 'announcement' ? document.getElementById('noticeDept').value : '老師提醒',
                 title: document.getElementById('noticeTitle').value,
                 content: document.getElementById('noticeContent').value,
                 imgUrl: document.getElementById('noticeImgUrl').value,
                 linkUrl: document.getElementById('noticeLinkUrl').value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("發布成功！");
-                closeNoticeModal();
-            });
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (docId) {
+                db.collection(collection).doc(docId).update(payload).then(() => {
+                    alert("更新成功！");
+                    closeNoticeModal();
+                });
+            } else {
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                db.collection(collection).add(payload).then(() => {
+                    alert("發布成功！");
+                    closeNoticeModal();
+                });
+            }
         }
 
-        // 即時監聽公告
+        function deleteItem(collection, docId) {
+            if (confirm("確定要刪除這筆資料嗎？刪除後無法復原喔！")) {
+                db.collection(collection).doc(docId).delete().then(() => alert("已成功刪除！"));
+            }
+        }
+
+        // 監聽公告列表 (包含後台管理按鈕)
         db.collection('announcements').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('announcementList');
             if (snapshot.empty) { list.innerHTML = '<p class="text-gray-400 text-sm">目前無公告。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
+                const id = doc.id;
                 html += `
                     <div class="p-5 rounded-3xl border-2 border-amber-100 bg-amber-50/30 hover:shadow-md transition relative">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="bear-badge text-amber-900 font-black text-xs px-3 py-1 rounded-full shadow-sm">${d.dept || '校內公告'}</span>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="bear-badge text-amber-900 font-black text-xs px-3 py-1 rounded-full shadow-sm">${d.dept || '教務處'}</span>
+                            <div class="admin-only hidden space-x-2">
+                                <button onclick="openNoticeModal('announcement', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg hover:bg-sky-200">✏️ 編輯</button>
+                                <button onclick="deleteItem('announcements', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200">🗑️ 刪除</button>
+                            </div>
                         </div>
                         <h3 class="font-black text-amber-950 text-base mb-1">${d.title}</h3>
                         <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed mb-3">${d.content}</p>
                         ${d.imgUrl ? `<img src="${d.imgUrl}" class="max-h-56 rounded-2xl mb-3 border border-amber-200 object-cover" alt="公告圖片">` : ''}
-                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-200 hover:bg-sky-100"><i class="fa-solid fa-link"></i> 開啟參考網址與預覽</a>` : ''}
+                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-200 hover:bg-sky-100"><i class="fa-solid fa-link"></i> 開啟預覽網址</a>` : ''}
                     </div>
                 `;
             });
             list.innerHTML = html;
         });
 
-        // 即時監聽小提醒
+        // 監聽提醒列表 (包含後台管理按鈕)
         db.collection('reminders').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('reminderList');
             if (snapshot.empty) { list.innerHTML = '<p class="text-gray-400 text-sm">目前無提醒。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
+                const id = doc.id;
                 html += `
-                    <div class="p-5 rounded-3xl border-2 border-emerald-100 bg-emerald-50/20 hover:shadow-md transition">
-                        <h3 class="font-black text-emerald-950 text-base mb-1">💌 ${d.title}</h3>
+                    <div class="p-5 rounded-3xl border-2 border-emerald-100 bg-emerald-50/20 hover:shadow-md transition relative">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-black text-emerald-950 text-base">💌 ${d.title}</h3>
+                            <div class="admin-only hidden space-x-2">
+                                <button onclick="openNoticeModal('reminder', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg hover:bg-sky-200">✏️ 編輯</button>
+                                <button onclick="deleteItem('reminders', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200">🗑️ 刪除</button>
+                            </div>
+                        </div>
                         <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed mb-2">${d.content}</p>
-                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-xs font-bold text-emerald-600 underline">開啓連結</a>` : ''}
+                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-xs font-bold text-emerald-600 underline">開啟預覽網址</a>` : ''}
                     </div>
                 `;
             });
             list.innerHTML = html;
         });
 
-        // 常用網站 Modal 與監聽
-        function openWebsiteModal() { document.getElementById('websiteModal').classList.remove('hidden'); }
+        // 常用網站管理 (新增/編輯/刪除)
+        function openWebsiteModal(docId = null) {
+            document.getElementById('webDocId').value = docId || '';
+            if (docId) {
+                document.getElementById('webModalTitle').innerText = '✏️ 編輯網站欄位';
+                db.collection('websites').doc(docId).get().then(doc => {
+                    const d = doc.data();
+                    document.getElementById('webName').value = d.name || '';
+                    document.getElementById('webUrl').value = d.url || '';
+                    document.getElementById('webIcon').value = d.icon || '📺';
+                    document.getElementById('webNote').value = d.note || '';
+                });
+            } else {
+                document.getElementById('webModalTitle').innerText = '🌐 新增常用網站';
+                document.getElementById('webName').value = '';
+                document.getElementById('webUrl').value = '';
+                document.getElementById('webNote').value = '';
+            }
+            document.getElementById('websiteModal').classList.remove('hidden');
+        }
         function closeWebsiteModal() { document.getElementById('websiteModal').classList.add('hidden'); }
 
         function saveWebsite() {
-            db.collection('websites').add({
+            const docId = document.getElementById('webDocId').value;
+            const payload = {
                 name: document.getElementById('webName').value,
                 url: document.getElementById('webUrl').value,
                 icon: document.getElementById('webIcon').value,
                 note: document.getElementById('webNote').value,
-                createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
-                alert("推薦網站新增成功！");
-                closeWebsiteModal();
-            });
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (docId) {
+                db.collection('websites').doc(docId).update(payload).then(() => {
+                    alert("網站更新成功！");
+                    closeWebsiteModal();
+                });
+            } else {
+                payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                db.collection('websites').add(payload).then(() => {
+                    alert("推薦網站新增成功！");
+                    closeWebsiteModal();
+                });
+            }
         }
 
         db.collection('websites').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
@@ -547,14 +616,21 @@
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
+                const id = doc.id;
                 html += `
-                    <a href="${d.url}" target="_blank" class="p-4 rounded-3xl border-2 border-purple-100 hover:border-purple-300 hover:shadow-md transition bg-purple-50/20 flex items-center gap-4">
-                        <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-purple-100">${d.icon || '🌐'}</div>
-                        <div>
-                            <div class="font-black text-purple-950 text-sm">${d.name}</div>
-                            <div class="text-xs text-gray-500 font-medium mt-0.5">${d.note || '點擊直接前往網頁'}</div>
+                    <div class="p-4 rounded-3xl border-2 border-purple-100 bg-purple-50/20 flex items-center justify-between gap-4 relative hover:shadow-md transition">
+                        <a href="${d.url}" target="_blank" class="flex items-center gap-4 flex-1">
+                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-purple-100 flex-shrink-0">${d.icon || '🌐'}</div>
+                            <div>
+                                <div class="font-black text-purple-950 text-sm">${d.name}</div>
+                                <div class="text-xs text-gray-500 font-medium mt-0.5">${d.note || '點擊前往網頁'}</div>
+                            </div>
+                        </a>
+                        <div class="admin-only hidden flex flex-col gap-1">
+                            <button onclick="openWebsiteModal('${id}')" class="text-[10px] bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️ 編輯</button>
+                            <button onclick="deleteItem('websites', '${id}')" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️ 刪除</button>
                         </div>
-                    </a>
+                    </div>
                 `;
             });
             list.innerHTML = html;
