@@ -1,1528 +1,353 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>一年六班 親師聯繫布告欄</title>
-    
-    <!-- External Fonts & Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS Script -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Noto Sans TC', 'sans-serif'],
-                        rounded: ['Fredoka', 'Noto Sans TC', 'sans-serif'],
-                    },
-                    colors: {
-                        handbook: { light: '#f0f9ff', DEFAULT: '#38bdf8', dark: '#0284c7' },
-                        notice: { light: '#fff7ed', DEFAULT: '#fb923c', dark: '#ea580c' },
-                        reminder: { light: '#f0fdf4', DEFAULT: '#4ade80', dark: '#16a34a' },
-                        links: { light: '#faf5ff', DEFAULT: '#c084fc', dark: '#9333ea' }
-                    }
-                }
-            }
-        }
-    </script>
+    <!-- FontAwesome 圖示 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK (v8 穩定版) -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
     <style>
         body {
-            background-color: #fdf2f8;
-            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #f0fdf4;
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
         }
-        .bg-pattern {
-            background-color: #fcf4f6;
-            background-image: radial-gradient(#fbcfe8 1.2px, transparent 1.2px);
-            background-size: 24px 24px;
+        .tab-btn.active {
+            background-color: #0284c7;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        .badge-pulse {
-            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.6); }
-            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(244, 63, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
-        }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #fdf2f8; }
-        ::-webkit-scrollbar-thumb { background: #f472b6; border-radius: 4px; }
     </style>
 </head>
-<body class="bg-pattern min-h-screen text-slate-800 pb-20 md:pb-10">
+<body class="min-h-screen pb-12">
 
-    <!-- Top Header Banner -->
-    <header class="bg-white/90 backdrop-blur-md border-b-4 border-rose-200 shadow-sm sticky top-0 z-30">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-rose-200 select-none">
-                    🧸
-                </div>
-                <div>
-                    <h1 class="text-xl md:text-2xl font-black text-slate-800 tracking-wide flex items-center gap-1.5">
-                        一年六班親師聯繫布告欄
-                    </h1>
-                    <div class="text-xs text-slate-400 font-medium flex flex-wrap items-center gap-1.5 mt-0.5">
-                        <span class="text-rose-500 font-bold bg-rose-50 px-1.5 py-0.5 rounded-md">🧸 有任何問題可以直接詢問旻慧老師唷!</span>
-                        <span class="text-slate-300 hidden sm:inline">•</span>
-                        <!-- Cloud Database Sync Status Indicator -->
-                        <span id="sync-status" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 雲端資料同步中
-                        </span>
-                    </div>
-                </div>
+    <!-- 頂部標題與登入區 -->
+    <header class="bg-white shadow-sm border-b border-emerald-100">
+        <div class="max-w-5xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fa-solid font-bold text-amber-500 fa-chalkboard-user"></i>
+                    一年六班 親師聯繫布告欄
+                </h1>
+                <p class="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                    <span>🧸 有任何問題可以直接詢問吳慧老師唷！</span>
+                    <span id="cloudStatus" class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-semibold">
+                        🟢 雲端連線中
+                    </span>
+                </p>
             </div>
-
-            <!-- Admin Mode Controls -->
-            <div class="flex items-center space-x-2">
-                <div id="admin-status-badge" class="hidden bg-rose-100 text-rose-700 border border-rose-300 text-xs px-2.5 py-1 rounded-full font-bold items-center gap-1">
-                    <i class="fa-solid fa-user-gear"></i> <span class="hidden sm:inline">教師後台</span>登入中
-                </div>
-                <button id="change-pwd-btn" onclick="openChangePasscodeModal()" class="admin-only hidden bg-white hover:bg-rose-50 text-rose-700 text-xs md:text-sm px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-rose-200 shadow-sm">
-                    <i class="fa-solid fa-key text-rose-400"></i>
-                    <span>修改密碼</span>
-                </button>
-                <button id="admin-toggle-btn" onclick="toggleAdminModal()" class="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs md:text-sm px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-rose-200 shadow-sm">
-                    <i class="fa-solid fa-lock text-rose-400" id="admin-icon"></i>
-                    <span id="admin-btn-text">教師管理登入</span>
+            
+            <div class="flex items-center gap-3">
+                <button id="authBtn" onclick="toggleAuthModal()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 border border-rose-200 px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 transition">
+                    <i class="fa-solid fa-lock"></i> 教師管理登入
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 pt-4 md:pt-6">
-
-        <!-- Responsive Category Navigation Tabs -->
-        <div class="mb-6 flex gap-2 md:gap-3 overflow-x-auto pb-2 scrollbar-none">
-            <!-- 1. Daily Handbook Tab Button -->
-            <button onclick="switchCategory('handbook')" id="tab-btn-handbook" 
-                class="tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between shadow-sm bg-sky-400 border-sky-300 text-white transform scale-[1.02]">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center text-lg">
-                        📖
-                    </div>
-                    <div class="text-left">
-                        <div class="text-[10px] opacity-90 font-medium">每日優先</div>
-                        <div class="text-xs md:text-sm font-bold">每日聯絡本</div>
-                    </div>
+    <main class="max-w-5xl mx-auto px-4 mt-6">
+        <!-- 分頁分類按鈕 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+            <button onclick="switchCategory('contact')" id="btn-contact" class="tab-btn active p-4 rounded-2xl bg-white border border-gray-100 text-left transition flex items-center gap-3 shadow-sm hover:border-sky-300">
+                <div class="w-10 h-10 rounded-xl bg-sky-100 text-sky-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-book-open"></i>
                 </div>
-                <span id="badge-handbook" class="hidden badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
+                <div>
+                    <div class="text-[10px] text-gray-400 font-bold">每日優先</div>
+                    <div class="font-bold text-gray-700">每日聯絡本</div>
+                </div>
             </button>
 
-            <!-- 2. School Announcements Tab Button -->
-            <button onclick="switchCategory('notice')" id="tab-btn-notice" 
-                class="tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 border-slate-100 bg-white hover:bg-orange-50 text-slate-700 transition-all duration-200 flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-xl bg-orange-100 text-orange-500 flex items-center justify-center text-lg">
-                        📢
-                    </div>
-                    <div class="text-left">
-                        <div class="text-[10px] text-slate-400 font-medium">校園動態</div>
-                        <div class="text-xs md:text-sm font-bold">校內公告</div>
-                    </div>
+            <button onclick="switchCategory('announcement')" id="btn-announcement" class="tab-btn p-4 rounded-2xl bg-white border border-gray-100 text-left transition flex items-center gap-3 shadow-sm hover:border-amber-300">
+                <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-bullhorn"></i>
                 </div>
-                <span id="badge-notice" class="hidden badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
+                <div>
+                    <div class="text-[10px] text-gray-400 font-bold">校園動態</div>
+                    <div class="font-bold text-gray-700">校內公告</div>
+                </div>
             </button>
 
-            <!-- 3. Teacher Reminders Tab Button -->
-            <button onclick="switchCategory('reminder')" id="tab-btn-reminder" 
-                class="tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 border-slate-100 bg-white hover:bg-emerald-50 text-slate-700 transition-all duration-200 flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-500 flex items-center justify-center text-lg">
-                        💡
-                    </div>
-                    <div class="text-left">
-                        <div class="text-[10px] text-slate-400 font-medium">溫馨叮嚀</div>
-                        <div class="text-xs md:text-sm font-bold">旻慧老師的小提醒</div>
-                    </div>
+            <button onclick="switchCategory('reminder')" id="btn-reminder" class="tab-btn p-4 rounded-2xl bg-white border border-gray-100 text-left transition flex items-center gap-3 shadow-sm hover:border-emerald-300">
+                <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-heart"></i>
                 </div>
-                <span id="badge-reminder" class="hidden badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
+                <div>
+                    <div class="text-[10px] text-gray-400 font-bold">溫馨叮嚀</div>
+                    <div class="font-bold text-gray-700">旻慧老師的小提醒</div>
+                </div>
             </button>
 
-            <!-- 4. Student Links Tab Button -->
-            <button onclick="switchCategory('links')" id="tab-btn-links" 
-                class="tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 border-slate-100 bg-white hover:bg-purple-50 text-slate-700 transition-all duration-200 flex items-center justify-between shadow-sm">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-500 flex items-center justify-center text-lg">
-                        🌐
-                    </div>
-                    <div class="text-left">
-                        <div class="text-[10px] text-slate-400 font-medium">自主學習</div>
-                        <div class="text-xs md:text-sm font-bold">學生常用網站</div>
-                    </div>
+            <button onclick="switchCategory('website')" id="btn-website" class="tab-btn p-4 rounded-2xl bg-white border border-gray-100 text-left transition flex items-center gap-3 shadow-sm hover:border-indigo-300">
+                <div class="w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-globe"></i>
                 </div>
-                <span id="badge-links" class="hidden badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
+                <div>
+                    <div class="text-[10px] text-gray-400 font-bold">自主學習</div>
+                    <div class="font-bold text-gray-700">學生常用網站</div>
+                </div>
             </button>
         </div>
 
-        <!-- CATEGORY 1: Daily Class Handbook -->
-        <section id="sec-handbook" class="category-sec space-y-4">
-            <div class="bg-sky-400 text-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-sky-300 relative overflow-hidden">
-                <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-                
-                <div class="flex flex-wrap justify-between items-center gap-3 mb-4 border-b border-sky-300/60 pb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="bg-white/90 text-sky-600 p-2.5 rounded-2xl text-xl font-bold shadow-sm">🧸✏️</span>
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-black tracking-wide flex items-center gap-2">
-                                一年六班 每日聯絡本
-                                <span class="text-xs bg-white/20 text-white px-2 py-0.5 rounded-lg font-normal hidden sm:inline">🧸 旻慧老師的親師園地</span>
-                            </h2>
-                            <!-- Date Selector -->
-                            <div class="flex items-center gap-2 mt-1.5">
-                                <i class="fa-solid fa-calendar-days text-sky-100 text-xs"></i>
-                                <label for="handbook-date-picker" class="text-xs text-sky-100 font-bold">選擇聯絡本日期：</label>
-                                <input type="date" id="handbook-date-picker" onchange="onHandbookDateChange(this.value)" class="bg-white text-sky-900 font-bold text-xs px-2.5 py-1 rounded-xl shadow-sm border border-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-300 cursor-pointer">
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="admin-only hidden flex items-center gap-2">
-                        <button onclick="openHandbookEditor()" class="bg-white text-sky-700 hover:bg-sky-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1">
-                            <i class="fa-solid fa-pen-to-square"></i> 編輯當日聯絡本
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Handbook Content Card -->
-                <div class="bg-white text-slate-800 rounded-2xl p-4 md:p-6 shadow-inner space-y-6">
+        <!-- 區塊1: 每日聯絡本 -->
+        <div id="sec-contact" class="tab-content bg-sky-400 rounded-3xl p-6 text-white shadow-lg mb-8">
+            <div class="flex justify-between items-center mb-6 flex-wrap gap-2">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🧸</span>
                     <div>
-                        <h3 class="text-sky-700 font-bold text-base md:text-lg mb-3 flex items-center justify-between border-b pb-2 border-sky-100">
-                            <span class="flex items-center gap-2">
-                                <i class="fa-solid fa-book-open"></i> 今日功課作業
-                            </span>
-                            <span id="handbook-date-tag" class="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-lg border border-sky-100"></span>
-                        </h3>
-                        <div id="handbook-homework-list" class="space-y-2"></div>
-                    </div>
-
-                    <div id="handbook-bring-block">
-                        <h3 class="text-amber-600 font-bold text-base md:text-lg mb-3 flex items-center gap-2 border-b pb-2 border-amber-100">
-                            <i class="fa-solid fa-bag-shopping"></i> 明日需帶物品
-                        </h3>
-                        <ul id="handbook-bring-list" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm font-medium"></ul>
-                    </div>
-
-                    <div id="handbook-note-block" class="bg-sky-50 border border-sky-200 rounded-xl p-4">
-                        <h4 class="text-sky-800 font-bold text-sm mb-1 flex items-center gap-1.5">
-                            <i class="fa-solid fa-comment-dots text-sky-500"></i> 今日老師叮嚀
-                        </h4>
-                        <p id="handbook-teacher-note" class="text-slate-700 text-sm leading-relaxed whitespace-pre-line"></p>
-                    </div>
-
-                    <div class="pt-2 flex justify-between items-center text-xs text-slate-400 border-t border-slate-100">
-                        <div class="flex items-center gap-1.5 text-sky-600 font-medium">
-                            <i class="fa-solid fa-circle-info"></i> 資料已連結雲端資料庫，跨裝置即時更新
-                        </div>
+                        <h2 class="text-2xl font-bold">一年六班 每日聯絡本</h2>
+                        <span class="bg-sky-500/50 px-3 py-1 rounded-full text-xs font-semibold">旻慧老師的親師園地</span>
                     </div>
                 </div>
+                <!-- 老師編輯按鈕（登入後顯示） -->
+                <button onclick="editContact()" class="admin-only hidden bg-white text-sky-600 hover:bg-sky-50 font-bold px-4 py-2 rounded-xl text-sm transition shadow">
+                    <i class="fa-solid fa-pen-to-square"></i> 更新今日聯絡本
+                </button>
             </div>
-        </section>
 
-        <!-- CATEGORY 2: School Announcements -->
-        <section id="sec-notice" class="category-sec hidden space-y-4">
-            <div class="bg-orange-300 text-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-orange-200">
-                <div class="flex justify-between items-center mb-4 border-b border-orange-200/80 pb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="bg-white/90 text-orange-500 p-2.5 rounded-2xl text-xl font-bold shadow-sm">📢</span>
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-black tracking-wide text-orange-950">校內重要公告</h2>
-                            <p class="text-xs md:text-sm text-orange-800 font-medium">學校處室活動、宣導與通知單</p>
-                        </div>
-                    </div>
-
-                    <button onclick="openAddNoticeModal()" class="admin-only hidden bg-white text-orange-700 hover:bg-orange-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> 新增公告
-                    </button>
+            <div class="bg-white rounded-2xl p-6 text-gray-800 space-y-6 shadow-inner">
+                <div>
+                    <h3 class="font-bold text-sky-600 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-book"></i> 今日功課作業
+                    </h3>
+                    <div id="homeworkContent" class="text-gray-600 min-h-[40px] whitespace-pre-line">尚無今日作業資料。</div>
                 </div>
-
-                <div id="notice-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
-        </section>
-
-        <!-- CATEGORY 3: Teacher Reminders -->
-        <section id="sec-reminder" class="category-sec hidden space-y-4">
-            <div class="bg-emerald-300 text-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-emerald-200">
-                <div class="flex justify-between items-center mb-4 border-b border-emerald-200/80 pb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="bg-white/90 text-emerald-600 p-2.5 rounded-2xl text-xl font-bold shadow-sm">💡</span>
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-black tracking-wide text-emerald-950">旻慧老師的小提醒</h2>
-                            <p class="text-xs md:text-sm text-emerald-800 font-medium">導師的生活叮嚀與即時通知</p>
-                        </div>
-                    </div>
-
-                    <button onclick="openAddReminderModal()" class="admin-only hidden bg-white text-emerald-800 hover:bg-emerald-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> 新增提醒
-                    </button>
+                <hr class="border-gray-100">
+                <div>
+                    <h3 class="font-bold text-amber-600 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-bag-shopping"></i> 明日需帶物品
+                    </h3>
+                    <div id="bringContent" class="text-gray-600 min-h-[40px] whitespace-pre-line">尚無帶物品提醒。</div>
                 </div>
-
-                <div id="reminder-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
-            </div>
-        </section>
-
-        <!-- CATEGORY 4: Student Useful Links -->
-        <section id="sec-links" class="category-sec hidden space-y-4">
-            <div class="bg-purple-300 text-white rounded-3xl p-5 md:p-6 shadow-sm border-2 border-purple-200">
-                <div class="flex justify-between items-center mb-4 border-b border-purple-200/80 pb-4">
-                    <div class="flex items-center space-x-3">
-                        <span class="bg-white/90 text-purple-600 p-2.5 rounded-2xl text-xl font-bold shadow-sm">🌐</span>
-                        <div>
-                            <h2 class="text-xl md:text-2xl font-black tracking-wide text-purple-950">學生常用網站</h2>
-                            <p class="text-xs md:text-sm text-purple-800 font-medium">提供孩子優質的線上學習資源與校園服務</p>
-                        </div>
-                    </div>
-
-                    <button onclick="openAddLinkModal()" class="admin-only hidden bg-white text-purple-800 hover:bg-purple-50 px-3 py-1.5 rounded-xl font-bold text-xs shadow-sm transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> 新增網站
-                    </button>
+                <hr class="border-gray-100">
+                <div>
+                    <h3 class="font-bold text-emerald-600 flex items-center gap-2 mb-2">
+                        <i class="fa-solid fa-comment-dots"></i> 今日老師叮嚀
+                    </h3>
+                    <div id="teacherNoteContent" class="text-gray-600 min-h-[40px] whitespace-pre-line">大家今天表現都很棒！</div>
                 </div>
-
-                <!-- Links Grid -->
-                <div id="links-cards-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
             </div>
-        </section>
+        </div>
 
+        <!-- 區塊2: 校內公告 -->
+        <div id="sec-announcement" class="tab-content hidden bg-white rounded-3xl p-6 shadow-md border border-gray-100 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-amber-500"></i> 校內公告
+                </h2>
+                <button onclick="addNotice('announcement')" class="admin-only hidden bg-amber-500 text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-amber-600 transition">
+                    <i class="fa-solid fa-plus"></i> 新增公告
+                </button>
+            </div>
+            <div id="announcementList" class="space-y-4">
+                <p class="text-gray-400 text-sm">載入中...</p>
+            </div>
+        </div>
+
+        <!-- 區塊3: 旻慧老師的小提醒 -->
+        <div id="sec-reminder" class="tab-content hidden bg-white rounded-3xl p-6 shadow-md border border-gray-100 mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-emerald-500"></i> 旻慧老師的小提醒
+                </h2>
+                <button onclick="addNotice('reminder')" class="admin-only hidden bg-emerald-500 text-white font-bold px-4 py-2 rounded-xl text-sm hover:bg-emerald-600 transition">
+                    <i class="fa-solid fa-plus"></i> 新增提醒
+                </button>
+            </div>
+            <div id="reminderList" class="space-y-4">
+                <p class="text-gray-400 text-sm">載入中...</p>
+            </div>
+        </div>
+
+        <!-- 區塊4: 學生常用網站 -->
+        <div id="sec-website" class="tab-content hidden bg-white rounded-3xl p-6 shadow-md border border-gray-100 mb-8">
+            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-globe text-indigo-500"></i> 學生常用網站
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="https://www.youtube.com" target="_blank" class="p-4 rounded-2xl border border-gray-100 hover:border-indigo-300 hover:shadow-md transition flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-xl font-bold"><i class="fa-brands fa-youtube"></i></div>
+                    <div>
+                        <div class="font-bold text-gray-800">YouTube 學習頻道</div>
+                        <div class="text-xs text-gray-400">課外輔助影音學習</div>
+                    </div>
+                </a>
+            </div>
+        </div>
     </main>
 
-    <!-- Modal 1: Admin Passcode Login -->
-    <div id="modal-admin-login" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
-            <div class="w-16 h-16 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-2xl mx-auto">
-                <i class="fa-solid fa-lock"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-black text-slate-800">教師管理登入</h3>
-                <p class="text-xs text-slate-400 mt-1">請輸入管理密碼以開啟編輯權限</p>
-            </div>
-            <input type="password" id="admin-passcode-input" class="w-full text-center border-2 border-slate-200 rounded-xl p-3 text-lg font-bold tracking-widest focus:border-rose-400 focus:outline-none" placeholder="****">
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeModal('modal-admin-login')" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="handleAdminLogin()" class="flex-1 py-2.5 bg-rose-400 hover:bg-rose-500 text-white rounded-xl text-xs font-bold shadow-sm">確認登入</button>
+    <!-- 登入 Modal -->
+    <div id="authModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-user-shield text-rose-500"></i> 教師管理員登入
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">電子郵件 (Email)</label>
+                    <input type="email" id="loginEmail" class="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400" placeholder="your-email@gmail.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1">密碼</label>
+                    <input type="password" id="loginPassword" class="w-full border rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-rose-400" placeholder="••••••••">
+                </div>
+                <button onclick="loginTeacher()" class="w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-2.5 rounded-xl transition shadow">
+                    確認登入
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 2: Edit Daily Handbook -->
-    <div id="modal-handbook-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-sky-800 flex items-center gap-2">
-                    <i class="fa-solid fa-pen"></i> 編輯當日聯絡本
-                </h3>
-                <button onclick="closeModal('modal-handbook-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="space-y-3 text-sm">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">發布日期描述</label>
-                    <input type="text" id="edit-hb-date" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-sky-400 focus:outline-none">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">今日功課作業 (每行一項作業)</label>
-                    <textarea id="edit-hb-homework" rows="4" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-sky-400 focus:outline-none" placeholder="1. 國語第一課生字&#10;2. 數學習作 P.10"></textarea>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">明日需帶物品 (每行一項，可不填)</label>
-                    <textarea id="edit-hb-bring" rows="3" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-amber-400 focus:outline-none" placeholder="跳繩&#10;水壺"></textarea>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">今日老師叮嚀 (可不填)</label>
-                    <textarea id="edit-hb-note" rows="3" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-sky-400 focus:outline-none" placeholder="請填寫給家長的溫馨提醒..."></textarea>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button onclick="closeModal('modal-handbook-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="saveHandbook()" class="px-4 py-2 bg-sky-400 hover:bg-sky-500 text-white rounded-xl text-xs font-bold shadow-sm">儲存聯絡本</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 3: Add/Edit Announcement Modal -->
-    <div id="modal-notice-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 id="notice-modal-title" class="text-lg font-black text-orange-800 flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn"></i> 新增校內公告
-                </h3>
-                <button onclick="closeModal('modal-notice-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="space-y-3 text-sm">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">公告標題</label>
-                    <input type="text" id="add-notice-title" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-orange-400 focus:outline-none" placeholder="例如：10月親師座談會通知">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">發布單位 / 標籤</label>
-                    <input type="text" id="add-notice-tag" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-orange-400 focus:outline-none" placeholder="例如：教務處 / 學務處">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">公告詳細內容</label>
-                    <textarea id="add-notice-content" rows="3" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-orange-400 focus:outline-none" placeholder="請輸入詳細說明..."></textarea>
-                </div>
-
-                <!-- Image Attachment -->
-                <div class="bg-orange-50/50 p-3 rounded-2xl border border-orange-100 space-y-2">
-                    <label class="block font-bold text-orange-900 text-xs flex items-center gap-1">
-                        <i class="fa-solid fa-image text-orange-500"></i> 附帶圖片 (可填網址或上傳檔案)
-                    </label>
-                    <input type="url" id="add-notice-img-url" oninput="previewUrlThumbnail(this.value, 'notice-img-preview')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="輸入圖片網址 (https://...)">
-                    <div class="text-center text-xs text-slate-400 font-bold my-1">- 或選擇手機/電腦檔案 -</div>
-                    <input type="file" id="add-notice-img-file" accept="image/*" onchange="handleImageUpload(event, 'notice-img-preview', 'add-notice-img-url')" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-100 file:text-orange-700 hover:file:bg-orange-200">
-                    <img id="notice-img-preview" class="hidden w-full max-h-40 object-cover rounded-xl mt-2 border border-slate-200">
-                </div>
-
-                <!-- Web Link Attachment with Live Thumbnail Preview -->
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
-                    <label class="block font-bold text-slate-700 text-xs flex items-center gap-1">
-                        <i class="fa-solid fa-link text-slate-500"></i> 附帶相關網址 / 附件連結
-                    </label>
-                    <input type="url" id="add-notice-link-url" oninput="previewLinkCard(this.value, 'notice-link-preview-box')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="例如：https://school.edu.tw/info.pdf">
-                    <div id="notice-link-preview-box" class="hidden"></div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button onclick="closeModal('modal-notice-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button id="save-notice-btn" onclick="saveNewNotice()" class="px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white rounded-xl text-xs font-bold shadow-sm">儲存公告</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 4: Add/Edit Reminder Modal -->
-    <div id="modal-reminder-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 id="reminder-modal-title" class="text-lg font-black text-emerald-800 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb"></i> 新增旻慧老師的小提醒
-                </h3>
-                <button onclick="closeModal('modal-reminder-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="space-y-3 text-sm">
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">選擇圖示</label>
-                    <select id="add-reminder-icon" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-emerald-400 focus:outline-none">
-                        <option value="👟">👟 體育/運動</option>
-                        <option value="🎨">🎨 美術/用品</option>
-                        <option value="🌧️">🌧️ 天氣/雨具</option>
-                        <option value="🍱">🍱 午餐/餐具</option>
-                        <option value="❤️">❤️ 健康/安全</option>
-                        <option value="⭐">⭐ 重要宣導</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">提醒標題</label>
-                    <input type="text" id="add-reminder-title" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-emerald-400 focus:outline-none" placeholder="例如：明日穿體育服">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">叮嚀詳細內容</label>
-                    <textarea id="add-reminder-content" rows="3" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-emerald-400 focus:outline-none" placeholder="請說明具體注意事項..."></textarea>
-                </div>
-
-                <!-- Image Attachment -->
-                <div class="bg-emerald-50/50 p-3 rounded-2xl border border-emerald-100 space-y-2">
-                    <label class="block font-bold text-emerald-900 text-xs flex items-center gap-1">
-                        <i class="fa-solid fa-image text-emerald-500"></i> 附帶照片/圖解 (選擇檔案或輸入網址)
-                    </label>
-                    <input type="url" id="add-reminder-img-url" oninput="previewUrlThumbnail(this.value, 'reminder-img-preview')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="網址 https://...">
-                    <input type="file" id="add-reminder-img-file" accept="image/*" onchange="handleImageUpload(event, 'reminder-img-preview', 'add-reminder-img-url')" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200">
-                    <img id="reminder-img-preview" class="hidden w-full max-h-40 object-cover rounded-xl mt-2 border border-slate-200">
-                </div>
-
-                <!-- Web Link Attachment with Live Thumbnail Preview -->
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
-                    <label class="block font-bold text-slate-700 text-xs flex items-center gap-1">
-                        <i class="fa-solid fa-link text-slate-500"></i> 附帶補充網址 (選填)
-                    </label>
-                    <input type="url" id="add-reminder-link-url" oninput="previewLinkCard(this.value, 'reminder-link-preview-box')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="https://...">
-                    <div id="reminder-link-preview-box" class="hidden"></div>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button onclick="closeModal('modal-reminder-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button id="save-reminder-btn" onclick="saveNewReminder()" class="px-4 py-2 bg-emerald-400 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm">新增提醒</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 5: Add Student Useful Link Modal -->
-    <div id="modal-link-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-purple-800 flex items-center gap-2">
-                    <i class="fa-solid fa-globe"></i> 新增學生常用網站
-                </h3>
-                <button onclick="closeModal('modal-link-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            </div>
-            <div class="space-y-3 text-sm">
-                <div class="flex gap-2">
-                    <div class="w-1/3">
-                        <label class="block font-bold text-slate-700 mb-1">圖示/Emoji</label>
-                        <input type="text" id="add-link-icon" class="w-full border border-slate-200 rounded-xl p-2.5 text-center text-lg" placeholder="📚">
-                    </div>
-                    <div class="w-2/3">
-                        <label class="block font-bold text-slate-700 mb-1">網站名稱</label>
-                        <input type="text" id="add-link-title" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-purple-400 focus:outline-none" placeholder="例如：均一教育平台">
-                    </div>
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">網站網址 (URL)</label>
-                    <input type="url" id="add-link-url" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-purple-400 focus:outline-none" placeholder="https://www.junyiacademy.org">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">簡短說明</label>
-                    <input type="text" id="add-link-desc" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-purple-400 focus:outline-none" placeholder="例如：提供國語與數學自主複習影片與練習">
-                </div>
-                <div>
-                    <label class="block font-bold text-slate-700 mb-1">分類標籤</label>
-                    <input type="text" id="add-link-tag" class="w-full border border-slate-200 rounded-xl p-2.5 focus:border-purple-400 focus:outline-none" placeholder="例如：國語 / 數學 / 綜合學習">
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 pt-2 border-t">
-                <button onclick="closeModal('modal-link-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="saveNewLink()" class="px-4 py-2 bg-purple-400 hover:bg-purple-500 text-white rounded-xl text-xs font-bold shadow-sm">新增網站</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal 6: Change Passcode Modal -->
-    <div id="modal-change-passcode" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl space-y-4 text-center">
-            <div class="w-14 h-14 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-xl mx-auto">
-                <i class="fa-solid fa-key"></i>
-            </div>
-            <div>
-                <h3 class="text-lg font-black text-slate-800">修改教師管理密碼</h3>
-                <p class="text-xs text-slate-400 mt-1">請輸入您欲設定的新管理密碼</p>
-            </div>
-            <div class="space-y-3 text-left">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">新密碼</label>
-                    <input type="password" id="new-passcode-input" class="w-full border-2 border-slate-200 rounded-xl p-2.5 text-center text-lg font-bold tracking-widest focus:border-rose-400 focus:outline-none" placeholder="****">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">再次確認新密碼</label>
-                    <input type="password" id="confirm-passcode-input" class="w-full border-2 border-slate-200 rounded-xl p-2.5 text-center text-lg font-bold tracking-widest focus:border-rose-400 focus:outline-none" placeholder="****">
-                </div>
-            </div>
-            <div class="flex gap-2 pt-2">
-                <button onclick="closeModal('modal-change-passcode')" class="flex-1 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="saveNewPasscode()" class="flex-1 py-2.5 bg-rose-400 hover:bg-rose-500 text-white rounded-xl text-xs font-bold shadow-sm">確認變更</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Custom Confirmation Modal -->
-    <div id="modal-custom-confirm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-xs w-full p-5 shadow-2xl space-y-4 text-center">
-            <div class="w-12 h-12 bg-rose-100 text-rose-500 rounded-full flex items-center justify-center text-xl mx-auto">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <p id="confirm-modal-text" class="text-sm font-bold text-slate-700">確定要執行此操作嗎？</p>
-            <div class="flex gap-2">
-                <button onclick="closeModal('modal-custom-confirm')" class="flex-1 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="handleConfirmYes()" class="flex-1 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold shadow-sm">確定</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div id="toast-notification" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-800/90 text-white text-xs md:text-sm font-bold px-4 py-3 rounded-2xl shadow-xl z-50 hidden items-center gap-2">
-        <i class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span id="toast-message">操作完成！</span>
-    </div>
-
-    <!-- Firebase Cloud Database Integration Module -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Configuration
-        // 初始化 Auth 服務
-const auth = firebase.auth();
-
-// 老師登入函式（供管理介面呼叫）
-function teacherLogin(email, password) {
-  auth.signInWithEmailAndPassword(email, password)
-    .then((userCredential) => {
-      alert("登入成功！現在您可以發布與修改公告。");
-    })
-    .catch((error) => {
-      alert("登入失敗：" + error.message);
-    });
-}
-
-// 登出函式
-function teacherLogout() {
-  auth.signOut().then(() => alert("已成功登出！"));
-}
-
-// 監聽登入狀態以切換 UI 權限
-auth.onAuthStateChanged((user) => {
-  const adminPanel = document.getElementById('admin-panel'); // 假設您的管理面板 ID 為 admin-panel
-  if (user) {
-    if (adminPanel) adminPanel.style.display = 'block';
-  } else {
-    if (adminPanel) adminPanel.style.display = 'none';
-  }
-});
-// Firebase 雲端資料庫設定
-const firebaseConfig = {
-  apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
-  authDomain: "class106-board.firebaseapp.com",
-  projectId: "class106-board",
-  storageBucket: "class106-board.firebasestorage.app",
-  messagingSenderId: "34565883734",
-  appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
-};
-
-// 1. 初始化 Firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-
-// 2. 初始化 Firestore 資料庫
-const db = firebase.firestore();
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        let isCloudConnected = false;
-
-        // Firestore Public Paths
-        const defaultDate = new Date().toISOString().split('T')[0];
-
-        // Application State
-        const state = {
-            isAdmin: false,
-            adminPasscode: '1234',
-            currentCategory: 'handbook', 
-            selectedDate: defaultDate,
-            editingNoticeId: null,
-            editingReminderId: null,
-            hasNew: {
-                handbook: true,
-                notice: true,
-                reminder: true,
-                links: true
-            },
-            handbooks: {
-                [defaultDate]: {
-                    dateDisplay: defaultDate,
-                    homework: ["1. 國語第 1 課生字延伸練習", "2. 數學習作 P.12 - P.13", "3. 閱讀課外書 15 分鐘"],
-                    bring: ["跳繩", "水壺", "黃色帽子"],
-                    teacherNote: "明天有體育課，請記得讓孩子穿著運動服與運動鞋喔！"
-                }
-            },
-            notices: [
-                {
-                    id: '1',
-                    title: '10月份學校校慶運動會預告',
-                    tag: '學務處',
-                    date: defaultDate,
-                    isNew: true,
-                    content: '親愛的家長您好，本學期學校運動會預定於 10 月 25 日舉行，歡迎家長共襄盛舉。詳細時程將於近期發放通知單。',
-                    imageUrl: '',
-                    linkUrl: ''
-                }
-            ],
-            reminders: [
-                {
-                    id: '1',
-                    icon: '👟',
-                    title: '明日穿著體育服',
-                    date: defaultDate,
-                    isNew: true,
-                    content: '明日星期三有體育課，請幫孩子穿著便於運動的球鞋與體育服。',
-                    imageUrl: '',
-                    linkUrl: ''
-                }
-            ],
-            links: [
-                {
-                    id: '1',
-                    icon: '📚',
-                    title: '均一教育平台',
-                    url: 'https://www.junyiacademy.org',
-                    desc: '提供國語、數學各單元自主複習影片與練習題',
-                    tag: '自主學習'
-                },
-                {
-                    id: '2',
-                    icon: '📖',
-                    title: '台北酷課雲 / 數位學習資源',
-                    url: 'https://cooc.tp.edu.tw',
-                    desc: '豐富的線上閱讀與互動教學資源',
-                    tag: '閱讀學習'
-                }
-            ]
+    <!-- 程式碼邏輯區塊 -->
+    <script>
+        // 1. Firebase 專屬設定
+        const firebaseConfig = {
+            apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
+            authDomain: "class106-board.firebaseapp.com",
+            projectId: "class106-board",
+            storageBucket: "class106-board.firebasestorage.app",
+            messagingSenderId: "34565883734",
+            appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
         };
 
-        let confirmCallback = null;
+        // 2. 初始化 Firebase
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        const auth = firebase.auth();
 
-        function updateSyncStatus(isOnline, message) {
-            const statusEl = document.getElementById('sync-status');
-            if (!statusEl) return;
-            if (isOnline) {
-                statusEl.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700";
-                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${message || '雲端資料同步中'}`;
+        // 3. 頁面與選單切換 logic
+        function switchCategory(cat) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+
+            const targetBtn = document.getElementById(`btn-${cat}`);
+            const targetSec = document.getElementById(`sec-${cat}`);
+
+            if (targetBtn) targetBtn.classList.add('active');
+            if (targetSec) targetSec.classList.remove('hidden');
+        }
+
+        // 4. Auth 控制 (登入與登出 UI)
+        function toggleAuthModal() {
+            const modal = document.getElementById('authModal');
+            if (auth.currentUser) {
+                if (confirm("確定要登出教師帳號嗎？")) {
+                    auth.signOut();
+                }
             } else {
-                statusEl.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800";
-                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${message || '單機展示模式 (無雲端權限)'}`;
+                modal.classList.toggle('hidden');
             }
         }
 
-        function createLinkPreviewHTML(url) {
-            if (!url) return '';
-            try {
-                const parsedUrl = new URL(url);
-                const domain = parsedUrl.hostname;
-                const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                
-                return `
-                    <a href="${url}" target="_blank" class="flex items-center gap-3 p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition group">
-                        <img src="${faviconUrl}" onerror="this.src='https://placehold.co/32x32/cbd5e1/475569?text=WEB'" class="w-7 h-7 rounded-lg object-contain bg-white p-1 border border-slate-100 shadow-sm flex-shrink-0">
-                        <div class="min-w-0 flex-1">
-                            <div class="text-xs font-bold text-slate-700 truncate group-hover:text-rose-600 transition">${domain}</div>
-                            <div class="text-[10px] text-slate-400 truncate">${url}</div>
-                        </div>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-rose-500 transition mr-1"></i>
-                    </a>
-                `;
-            } catch (e) {
-                return `
-                    <a href="${url}" target="_blank" class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition">
-                        <i class="fa-solid fa-link"></i> 開啟網址
-                    </a>
-                `;
-            }
+        function loginTeacher() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    alert("登入成功！");
+                    document.getElementById('authModal').classList.add('hidden');
+                })
+                .catch(err => {
+                    alert("登入失敗：" + err.message);
+                });
         }
 
-        function previewUrlThumbnail(url, imgPreviewId) {
-            const previewEl = document.getElementById(imgPreviewId);
-            if (!previewEl) return;
-            if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image'))) {
-                previewEl.src = url;
-                previewEl.classList.remove('hidden');
+        // 監聽登入狀態切換
+        auth.onAuthStateChanged(user => {
+            const authBtn = document.getElementById('authBtn');
+            const adminButtons = document.querySelectorAll('.admin-only');
+
+            if (user) {
+                authBtn.innerHTML = '<i class="fa-solid fa-right-from-bracket"></i> 登出管理員';
+                adminButtons.forEach(btn => btn.classList.remove('hidden'));
             } else {
-                previewEl.classList.add('hidden');
+                authBtn.innerHTML = '<i class="fa-solid fa-lock"></i> 教師管理登入';
+                adminButtons.forEach(btn => btn.classList.add('hidden'));
             }
-        }
+        });
 
-        function previewLinkCard(url, previewBoxId) {
-            const box = document.getElementById(previewBoxId);
-            if (!box) return;
-            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
-                box.innerHTML = createLinkPreviewHTML(url);
-                box.classList.remove('hidden');
-            } else {
-                box.classList.add('hidden');
-                box.innerHTML = '';
+        // 5. Firestore 資料庫實時讀取
+        // 讀取聯絡本
+        db.collection('board').doc('contact').onSnapshot(doc => {
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById('homeworkContent').innerText = data.homework || '尚無作業';
+                document.getElementById('bringContent').innerText = data.bring || '尚無帶物品提醒';
+                document.getElementById('teacherNoteContent').innerText = data.note || '無叮嚀';
             }
-        }
+        });
 
-        function renderHandbook() {
-            const hwContainer = document.getElementById('handbook-homework-list');
-            const bringBlock = document.getElementById('handbook-bring-block');
-            const bringList = document.getElementById('handbook-bring-list');
-            const noteBlock = document.getElementById('handbook-note-block');
-            const noteText = document.getElementById('handbook-teacher-note');
-            const dateTag = document.getElementById('handbook-date-tag');
-
-            const dateKey = state.selectedDate;
-            const hb = state.handbooks[dateKey];
-
-            if (dateTag) dateTag.innerText = hb?.dateDisplay || dateKey;
-
-            if (!hb) {
-                if (hwContainer) {
-                    hwContainer.innerHTML = `
-                        <div class="text-center py-6 text-slate-400 font-medium">
-                            <p>尚無 ${dateKey} 的聯絡本內容</p>
+        // 讀取校內公告與提醒
+        function loadList(collectionName, containerId) {
+            db.collection(collectionName).orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById(containerId);
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-gray-400 text-sm">目前沒有任何項目。</p>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const data = doc.data();
+                    html += `
+                        <div class="p-4 rounded-2xl border border-gray-100 hover:shadow-sm transition bg-gray-50/50">
+                            <div class="font-bold text-gray-800">${data.title}</div>
+                            <div class="text-sm text-gray-600 mt-1 whitespace-pre-line">${data.content}</div>
                         </div>
                     `;
-                }
-                if (bringBlock) bringBlock.classList.add('hidden');
-                if (noteBlock) noteBlock.classList.add('hidden');
-                return;
-            }
-
-            if (hwContainer) {
-                if (hb.homework && hb.homework.length > 0) {
-                    hwContainer.innerHTML = hb.homework.map(item => `
-                        <div class="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-sky-200 transition">
-                            <span class="text-sky-500 font-bold">•</span>
-                            <span class="text-xs md:text-sm font-medium text-slate-700 leading-relaxed">${item}</span>
-                        </div>
-                    `).join('');
-                } else {
-                    hwContainer.innerHTML = `<p class="text-xs text-slate-400 italic">本日尚無交代作業</p>`;
-                }
-            }
-
-            if (bringBlock && bringList) {
-                if (hb.bring && hb.bring.length > 0 && hb.bring.some(i => i.trim() !== '')) {
-                    bringBlock.classList.remove('hidden');
-                    bringList.innerHTML = hb.bring.filter(i => i.trim() !== '').map(item => `
-                        <li class="flex items-center space-x-2 bg-amber-50/80 border border-amber-200/60 p-2.5 rounded-xl text-amber-900">
-                            <span class="text-amber-500">🎒</span>
-                            <span class="text-xs md:text-sm font-bold">${item}</span>
-                        </li>
-                    `).join('');
-                } else {
-                    bringBlock.classList.add('hidden');
-                }
-            }
-
-            if (noteBlock && noteText) {
-                if (hb.teacherNote && hb.teacherNote.trim() !== '') {
-                    noteBlock.classList.remove('hidden');
-                    noteText.innerText = hb.teacherNote;
-                } else {
-                    noteBlock.classList.add('hidden');
-                }
-            }
-        }
-
-        function renderNotices() {
-            const container = document.getElementById('notice-cards-container');
-            if (!container) return;
-            if (state.notices.length === 0) {
-                container.innerHTML = `<div class="col-span-2 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無校內公告</div>`;
-                return;
-            }
-
-            container.innerHTML = state.notices.map(item => `
-                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-orange-100 hover:shadow-md transition flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center gap-2">
-                                <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-200">
-                                    ${item.tag || '校園公告'}
-                                </span>
-                                ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
-                            </div>
-                            <div class="flex items-center gap-1">
-                                ${state.isAdmin ? `
-                                    <button onclick="openEditNoticeModal('${item.id}')" class="text-orange-600 hover:text-orange-800 p-1 text-xs" title="修改公告"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="confirmDeleteNotice('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1" title="刪除公告"><i class="fa-solid fa-trash"></i></button>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-base md:text-lg text-slate-800 mb-2">${item.title}</h3>
-                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
-
-                        ${item.imageUrl ? `
-                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-100">
-                                <img src="${item.imageUrl}" alt="公告圖片" class="w-full max-h-48 object-cover hover:scale-105 transition duration-300">
-                            </div>
-                        ` : ''}
-
-                        ${item.linkUrl ? `
-                            <div class="mt-3">
-                                ${createLinkPreviewHTML(item.linkUrl)}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 text-right">
-                        <span class="text-[11px] text-slate-400">發布日期：${item.date}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderReminders() {
-            const container = document.getElementById('reminder-cards-container');
-            if (!container) return;
-            if (state.reminders.length === 0) {
-                container.innerHTML = `<div class="col-span-2 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無旻慧老師的小提醒</div>`;
-                return;
-            }
-
-            container.innerHTML = state.reminders.map(item => `
-                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-emerald-100 hover:shadow-md transition flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-2xl">${item.icon || '💡'}</span>
-                                <h3 class="font-bold text-base md:text-lg text-emerald-900">${item.title}</h3>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
-                                ${state.isAdmin ? `
-                                    <button onclick="openEditReminderModal('${item.id}')" class="text-emerald-600 hover:text-emerald-800 p-1 text-xs ml-1" title="修改提醒"><i class="fa-solid fa-pen"></i></button>
-                                    <button onclick="confirmDeleteReminder('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1" title="刪除提醒"><i class="fa-solid fa-trash"></i></button>
-                                ` : ''}
-                            </div>
-                        </div>
-                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
-
-                        ${item.imageUrl ? `
-                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-100">
-                                <img src="${item.imageUrl}" alt="提醒圖片" class="w-full max-h-48 object-cover">
-                            </div>
-                        ` : ''}
-
-                        ${item.linkUrl ? `
-                            <div class="mt-3">
-                                ${createLinkPreviewHTML(item.linkUrl)}
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 text-right">
-                        <span class="text-[11px] text-slate-400">提醒時間：${item.date}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderLinks() {
-            const container = document.getElementById('links-cards-container');
-            if (!container) return;
-            if (state.links.length === 0) {
-                container.innerHTML = `<div class="col-span-3 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無設定常用網站</div>`;
-                return;
-            }
-
-            container.innerHTML = state.links.map(item => `
-                <div class="bg-white text-slate-800 p-4 rounded-2xl shadow-sm border border-purple-100 hover:shadow-md transition flex flex-col justify-between relative">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-3xl">${item.icon || '🌐'}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                                    ${item.tag || '常用連結'}
-                                </span>
-                                ${state.isAdmin ? `<button onclick="confirmDeleteLink('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1"><i class="fa-solid fa-trash"></i></button>` : ''}
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-base text-slate-800 mb-1">${item.title}</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-4">${item.desc || ''}</p>
-                    </div>
-                    <a href="${item.url}" target="_blank" class="w-full bg-purple-400 hover:bg-purple-500 text-white font-bold text-xs py-2 rounded-xl transition shadow-sm text-center flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 開啟網站
-                    </a>
-                </div>
-            `).join('');
-        }
-
-        function onHandbookDateChange(dateValue) {
-            if (!dateValue) return;
-            state.selectedDate = dateValue;
-            renderHandbook();
-        }
-
-        function openHandbookEditor() {
-            const dateKey = state.selectedDate;
-            const hb = state.handbooks[dateKey] || {
-                dateDisplay: `${dateKey}`,
-                homework: [],
-                bring: [],
-                teacherNote: ""
-            };
-
-            document.getElementById('edit-hb-date').value = hb.dateDisplay || dateKey;
-            document.getElementById('edit-hb-homework').value = (hb.homework || []).join('\n');
-            document.getElementById('edit-hb-bring').value = (hb.bring || []).join('\n');
-            document.getElementById('edit-hb-note').value = hb.teacherNote || '';
-            document.getElementById('modal-handbook-editor').classList.remove('hidden');
-        }
-
-        async function saveHandbook() {
-            const dateKey = state.selectedDate;
-            const dateDisplay = document.getElementById('edit-hb-date').value.trim();
-            const hwRaw = document.getElementById('edit-hb-homework').value;
-            const bringRaw = document.getElementById('edit-hb-bring').value;
-            const note = document.getElementById('edit-hb-note').value.trim();
-
-            const hbObj = {
-                dateDisplay: dateDisplay || dateKey,
-                homework: hwRaw.split('\n').map(s => s.trim()).filter(Boolean),
-                bring: bringRaw.split('\n').map(s => s.trim()).filter(Boolean),
-                teacherNote: note
-            };
-
-            state.handbooks[dateKey] = hbObj;
-            state.hasNew.handbook = true;
-
-            if (isCloudConnected) {
-                try {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'handbooks', dateKey), hbObj);
-                } catch (e) {
-                    console.warn("Cloud Save Handbook Error:", e);
-                }
-            }
-
-            renderHandbook();
-            updateNewBadges();
-            closeModal('modal-handbook-editor');
-            showToast(`${dateKey} 聯絡本已成功更新！`);
-        }
-
-        function switchCategory(category) {
-            state.currentCategory = category;
-            state.hasNew[category] = false;
-            updateNewBadges();
-
-            const tabConfigs = {
-                handbook: { id: 'tab-btn-handbook', colorClass: 'bg-sky-400 border-sky-300 text-white transform scale-[1.02]' },
-                notice: { id: 'tab-btn-notice', colorClass: 'bg-orange-400 border-orange-300 text-white transform scale-[1.02]' },
-                reminder: { id: 'tab-btn-reminder', colorClass: 'bg-emerald-400 border-emerald-300 text-white transform scale-[1.02]' },
-                links: { id: 'tab-btn-links', colorClass: 'bg-purple-400 border-purple-300 text-white transform scale-[1.02]' }
-            };
-
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.className = "tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 border-slate-100 bg-white hover:bg-slate-50 text-slate-700 transition-all duration-200 flex items-center justify-between shadow-sm";
-            });
-
-            const activeConfig = tabConfigs[category];
-            const activeBtn = document.getElementById(activeConfig.id);
-            if (activeBtn) {
-                activeBtn.className = `tab-btn flex-1 min-w-[130px] md:min-w-[0] p-3 rounded-2xl border-2 transition-all duration-200 flex items-center justify-between shadow-sm ${activeConfig.colorClass}`;
-            }
-
-            document.querySelectorAll('.category-sec').forEach(sec => sec.classList.add('hidden'));
-            document.getElementById(`sec-${category}`).classList.remove('hidden');
-        }
-
-        function updateNewBadges() {
-            ['handbook', 'notice', 'reminder', 'links'].forEach(cat => {
-                const badge = document.getElementById(`badge-${cat}`);
-                if (badge) {
-                    if (state.hasNew[cat]) {
-                        badge.classList.remove('hidden');
-                    } else {
-                        badge.classList.add('hidden');
-                    }
-                }
-            });
-        }
-
-        function handleImageUpload(event, previewId, inputUrlId) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const dataUrl = e.target.result;
-                    document.getElementById(inputUrlId).value = dataUrl;
-                    const imgPreview = document.getElementById(previewId);
-                    if (imgPreview) {
-                        imgPreview.src = dataUrl;
-                        imgPreview.classList.remove('hidden');
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function openAddNoticeModal() {
-            state.editingNoticeId = null;
-            document.getElementById('notice-modal-title').innerHTML = `<i class="fa-solid fa-bullhorn"></i> 新增校內公告`;
-            document.getElementById('save-notice-btn').innerText = '新增公告';
-            document.getElementById('add-notice-title').value = '';
-            document.getElementById('add-notice-tag').value = '教務處';
-            document.getElementById('add-notice-content').value = '';
-            document.getElementById('add-notice-img-url').value = '';
-            document.getElementById('add-notice-link-url').value = '';
-            document.getElementById('notice-img-preview').classList.add('hidden');
-            document.getElementById('notice-link-preview-box').classList.add('hidden');
-            document.getElementById('modal-notice-editor').classList.remove('hidden');
-        }
-
-        function openEditNoticeModal(id) {
-            const item = state.notices.find(n => String(n.id) === String(id));
-            if (!item) return;
-            state.editingNoticeId = id;
-            document.getElementById('notice-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 修改校內公告`;
-            document.getElementById('save-notice-btn').innerText = '儲存修改';
-
-            document.getElementById('add-notice-title').value = item.title || '';
-            document.getElementById('add-notice-tag').value = item.tag || '';
-            document.getElementById('add-notice-content').value = item.content || '';
-            document.getElementById('add-notice-img-url').value = item.imageUrl || '';
-            document.getElementById('add-notice-link-url').value = item.linkUrl || '';
-
-            previewUrlThumbnail(item.imageUrl || '', 'notice-img-preview');
-            previewLinkCard(item.linkUrl || '', 'notice-link-preview-box');
-
-            document.getElementById('modal-notice-editor').classList.remove('hidden');
-        }
-
-        async function saveNewNotice() {
-            const title = document.getElementById('add-notice-title').value.trim();
-            const tag = document.getElementById('add-notice-tag').value.trim();
-            const content = document.getElementById('add-notice-content').value.trim();
-            const imageUrl = document.getElementById('add-notice-img-url').value.trim();
-            const linkUrl = document.getElementById('add-notice-link-url').value.trim();
-
-            if (!title || !content) {
-                showToast("請完整填寫標題與內容！");
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0];
-
-            if (state.editingNoticeId) {
-                const editId = String(state.editingNoticeId);
-                const updatedNotice = {
-                    title: title,
-                    tag: tag || '校園公告',
-                    content: content,
-                    imageUrl: imageUrl,
-                    linkUrl: linkUrl
-                };
-
-                if (isCloudConnected) {
-                    try {
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', editId), updatedNotice, { merge: true });
-                    } catch (e) {
-                        console.warn("Cloud Update Notice Error:", e);
-                    }
-                } else {
-                    const idx = state.notices.findIndex(n => String(n.id) === editId);
-                    if (idx !== -1) {
-                        state.notices[idx] = { ...state.notices[idx], ...updatedNotice };
-                    }
-                    renderNotices();
-                }
-                showToast("校內公告已順利更新！📢");
-            } else {
-                const newId = String(Date.now());
-                const newNotice = {
-                    title: title,
-                    tag: tag || '校園公告',
-                    date: today,
-                    isNew: true,
-                    content: content,
-                    imageUrl: imageUrl,
-                    linkUrl: linkUrl
-                };
-
-                if (isCloudConnected) {
-                    try {
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', newId), newNotice);
-                    } catch (e) {
-                        console.warn("Cloud Create Notice Error:", e);
-                    }
-                } else {
-                    state.notices.unshift({ id: newId, ...newNotice });
-                    renderNotices();
-                }
-
-                state.hasNew.notice = true;
-                updateNewBadges();
-                showToast("校內公告已同步發布！📢");
-            }
-
-            closeModal('modal-notice-editor');
-        }
-
-        function confirmDeleteNotice(id) {
-            showConfirmDialog("確定要刪除這筆校內公告嗎？", async () => {
-                if (isCloudConnected) {
-                    try {
-                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', String(id)));
-                    } catch (e) {
-                        console.warn("Cloud Delete Notice Error:", e);
-                    }
-                } else {
-                    state.notices = state.notices.filter(item => String(item.id) !== String(id));
-                    renderNotices();
-                }
-                showToast("公告已成功刪除");
-            });
-        }
-
-        function openAddReminderModal() {
-            state.editingReminderId = null;
-            document.getElementById('reminder-modal-title').innerHTML = `<i class="fa-solid fa-lightbulb"></i> 新增老師叮嚀`;
-            document.getElementById('save-reminder-btn').innerText = '新增提醒';
-            document.getElementById('add-reminder-title').value = '';
-            document.getElementById('add-reminder-content').value = '';
-            document.getElementById('add-reminder-img-url').value = '';
-            document.getElementById('add-reminder-link-url').value = '';
-            document.getElementById('reminder-img-preview').classList.add('hidden');
-            document.getElementById('reminder-link-preview-box').classList.add('hidden');
-            document.getElementById('modal-reminder-editor').classList.remove('hidden');
-        }
-
-        function openEditReminderModal(id) {
-            const item = state.reminders.find(r => String(r.id) === String(id));
-            if (!item) return;
-            state.editingReminderId = id;
-            document.getElementById('reminder-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 修改老師叮嚀`;
-            document.getElementById('save-reminder-btn').innerText = '儲存修改';
-            
-            document.getElementById('add-reminder-icon').value = item.icon || '👟';
-            document.getElementById('add-reminder-title').value = item.title || '';
-            document.getElementById('add-reminder-content').value = item.content || '';
-            document.getElementById('add-reminder-img-url').value = item.imageUrl || '';
-            document.getElementById('add-reminder-link-url').value = item.linkUrl || '';
-            
-            previewUrlThumbnail(item.imageUrl || '', 'reminder-img-preview');
-            previewLinkCard(item.linkUrl || '', 'reminder-link-preview-box');
-            
-            document.getElementById('modal-reminder-editor').classList.remove('hidden');
-        }
-
-        async function saveNewReminder() {
-            const icon = document.getElementById('add-reminder-icon').value;
-            const title = document.getElementById('add-reminder-title').value.trim();
-            const content = document.getElementById('add-reminder-content').value.trim();
-            const imageUrl = document.getElementById('add-reminder-img-url').value.trim();
-            const linkUrl = document.getElementById('add-reminder-link-url').value.trim();
-
-            if (!title || !content) {
-                showToast("請完整填寫標題與內容！");
-                return;
-            }
-
-            const today = new Date().toISOString().split('T')[0];
-
-            if (state.editingReminderId) {
-                const editId = String(state.editingReminderId);
-                const updatedData = {
-                    icon: icon,
-                    title: title,
-                    content: content,
-                    imageUrl: imageUrl,
-                    linkUrl: linkUrl
-                };
-
-                if (isCloudConnected) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', editId), updatedData, { merge: true });
-                } else {
-                    const idx = state.reminders.findIndex(r => String(r.id) === editId);
-                    if (idx !== -1) {
-                        state.reminders[idx] = { ...state.reminders[idx], ...updatedData };
-                    }
-                    renderReminders();
-                }
-                showToast("老師提醒已順利完成修改！✏️");
-            } else {
-                const newId = String(Date.now());
-                const newReminder = {
-                    icon: icon,
-                    title: title,
-                    date: today,
-                    isNew: true,
-                    content: content,
-                    imageUrl: imageUrl,
-                    linkUrl: linkUrl
-                };
-
-                if (isCloudConnected) {
-                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', newId), newReminder);
-                } else {
-                    state.reminders.unshift({ id: newId, ...newReminder });
-                    renderReminders();
-                }
-
-                state.hasNew.reminder = true;
-                updateNewBadges();
-                showToast("老師提醒已同步發布！💡");
-            }
-
-            closeModal('modal-reminder-editor');
-        }
-
-        function confirmDeleteReminder(id) {
-            showConfirmDialog("確定要刪除這筆老師提醒嗎？", async () => {
-                if (isCloudConnected) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', String(id)));
-                } else {
-                    state.reminders = state.reminders.filter(item => String(item.id) !== String(id));
-                    renderReminders();
-                }
-                showToast("提醒已成功刪除");
-            });
-        }
-
-        function openAddLinkModal() {
-            document.getElementById('add-link-icon').value = '📚';
-            document.getElementById('add-link-title').value = '';
-            document.getElementById('add-link-url').value = '';
-            document.getElementById('add-link-desc').value = '';
-            document.getElementById('add-link-tag').value = '學習資源';
-            document.getElementById('modal-link-editor').classList.remove('hidden');
-        }
-
-        async function saveNewLink() {
-            const icon = document.getElementById('add-link-icon').value.trim() || '🌐';
-            const title = document.getElementById('add-link-title').value.trim();
-            const url = document.getElementById('add-link-url').value.trim();
-            const desc = document.getElementById('add-link-desc').value.trim();
-            const tag = document.getElementById('add-link-tag').value.trim();
-
-            if (!title || !url) {
-                showToast("請填寫網站名稱與網址！");
-                return;
-            }
-
-            const newId = String(Date.now());
-            const newLink = {
-                icon: icon,
-                title: title,
-                url: url,
-                desc: desc,
-                tag: tag || '常用網站'
-            };
-
-            if (isCloudConnected) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'links', newId), newLink);
-            } else {
-                state.links.unshift({ id: newId, ...newLink });
-                renderLinks();
-            }
-
-            state.hasNew.links = true;
-            updateNewBadges();
-            closeModal('modal-link-editor');
-            showToast("學生常用網站已新增！🌐");
-        }
-
-        function confirmDeleteLink(id) {
-            showConfirmDialog("確定要刪除這個網站連結嗎？", async () => {
-                if (isCloudConnected) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'links', String(id)));
-                } else {
-                    state.links = state.links.filter(item => String(item.id) !== String(id));
-                    renderLinks();
-                }
-                showToast("網站連結已刪除");
-            });
-        }
-
-        function toggleAdminModal() {
-            if (state.isAdmin) {
-                showConfirmDialog("確定要退出教師後台管理模式嗎？", () => {
-                    state.isAdmin = false;
-                    updateAdminUI();
-                    showToast("已退出管理員模式");
                 });
-            } else {
-                document.getElementById('admin-passcode-input').value = '';
-                document.getElementById('modal-admin-login').classList.remove('hidden');
+                container.innerHTML = html;
+            });
+        }
+
+        loadList('announcements', 'announcementList');
+        loadList('reminders', 'reminderList');
+
+        // 6. 老師資料修改功能 (需要登入權限)
+        function editContact() {
+            const homework = prompt("請輸入今日功課作業：", document.getElementById('homeworkContent').innerText);
+            const bring = prompt("請輸入明日需帶物品：", document.getElementById('bringContent').innerText);
+            const note = prompt("請輸入今日老師叮嚀：", document.getElementById('teacherNoteContent').innerText);
+
+            if (homework !== null && bring !== null && note !== null) {
+                db.collection('board').doc('contact').set({
+                    homework: homework,
+                    bring: bring,
+                    note: note,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    alert("聯絡本已成功更新至雲端！");
+                }).catch(err => alert("更新失敗，請確認權限：" + err.message));
             }
         }
 
-        function handleAdminLogin() {
-            const pwd = document.getElementById('admin-passcode-input').value;
-            if (pwd === state.adminPasscode) {
-                state.isAdmin = true;
-                closeModal('modal-admin-login');
-                updateAdminUI();
-                showToast("登入成功！已開啟後台編輯權限 ✏️");
-            } else {
-                showToast("密碼錯誤！請重新輸入");
-            }
+        function addNotice(type) {
+            const title = prompt("請輸入標題：");
+            if (!title) return;
+            const content = prompt("請輸入詳細內容：");
+            if (!content) return;
+
+            const collectionName = type === 'announcement' ? 'announcements' : 'reminders';
+            db.collection(collectionName).add({
+                title: title,
+                content: content,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("新增成功！");
+            }).catch(err => alert("新增失敗：" + err.message));
         }
-
-        function openChangePasscodeModal() {
-            document.getElementById('new-passcode-input').value = '';
-            document.getElementById('confirm-passcode-input').value = '';
-            document.getElementById('modal-change-passcode').classList.remove('hidden');
-        }
-
-        async function saveNewPasscode() {
-            const newPwd = document.getElementById('new-passcode-input').value.trim();
-            const confirmPwd = document.getElementById('confirm-passcode-input').value.trim();
-
-            if (!newPwd) {
-                showToast("請輸入新密碼！");
-                return;
-            }
-            if (newPwd !== confirmPwd) {
-                showToast("兩次輸入的密碼不一致！");
-                return;
-            }
-
-            state.adminPasscode = newPwd;
-
-            if (isCloudConnected) {
-                try {
-                    await setDoc(configDocRef, { passcode: newPwd }, { merge: true });
-                    showToast("管理密碼已成功修改並同步至雲端！🔑");
-                } catch (e) {
-                    console.warn("Cloud Save Passcode Error:", e);
-                    showToast("已更新當前密碼（雲端同步受限）");
-                }
-            } else {
-                showToast("已更新當前密碼（單機展示模式）🔑");
-            }
-
-            closeModal('modal-change-passcode');
-        }
-
-        function updateAdminUI() {
-            const statusBadge = document.getElementById('admin-status-badge');
-            const adminBtnText = document.getElementById('admin-btn-text');
-            const adminIcon = document.getElementById('admin-icon');
-            const adminElements = document.querySelectorAll('.admin-only');
-
-            if (state.isAdmin) {
-                statusBadge.classList.remove('hidden');
-                statusBadge.classList.add('flex');
-                adminBtnText.innerText = "退出後台";
-                adminIcon.className = "fa-solid fa-right-from-bracket text-rose-500";
-                adminElements.forEach(el => el.classList.remove('hidden'));
-            } else {
-                statusBadge.classList.add('hidden');
-                statusBadge.classList.remove('flex');
-                adminBtnText.innerText = "教師管理登入";
-                adminIcon.className = "fa-solid fa-lock text-rose-400";
-                adminElements.forEach(el => el.classList.add('hidden'));
-            }
-
-            renderHandbook();
-            renderNotices();
-            renderReminders();
-            renderLinks();
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast-notification');
-            const toastMsg = document.getElementById('toast-message');
-            toastMsg.innerText = msg;
-            toast.classList.remove('hidden');
-            toast.classList.add('flex');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-                toast.classList.remove('flex');
-            }, 3000);
-        }
-
-        function showConfirmDialog(msg, callback) {
-            confirmCallback = callback;
-            document.getElementById('confirm-modal-text').innerText = msg;
-            document.getElementById('modal-custom-confirm').classList.remove('hidden');
-        }
-
-        function handleConfirmYes() {
-            closeModal('modal-custom-confirm');
-            if (typeof confirmCallback === 'function') {
-                confirmCallback();
-                confirmCallback = null;
-            }
-        }
-
-        // Attach global scope window handlers for HTML inline attributes
-        window.onHandbookDateChange = onHandbookDateChange;
-        window.openHandbookEditor = openHandbookEditor;
-        window.saveHandbook = saveHandbook;
-        window.switchCategory = switchCategory;
-        window.handleImageUpload = handleImageUpload;
-        window.openAddNoticeModal = openAddNoticeModal;
-        window.openEditNoticeModal = openEditNoticeModal;
-        window.saveNewNotice = saveNewNotice;
-        window.confirmDeleteNotice = confirmDeleteNotice;
-        window.openAddReminderModal = openAddReminderModal;
-        window.openEditReminderModal = openEditReminderModal;
-        window.saveNewReminder = saveNewReminder;
-        window.confirmDeleteReminder = confirmDeleteReminder;
-        window.openAddLinkModal = openAddLinkModal;
-        window.saveNewLink = saveNewLink;
-        window.confirmDeleteLink = confirmDeleteLink;
-        window.toggleAdminModal = toggleAdminModal;
-        window.handleAdminLogin = handleAdminLogin;
-        window.openChangePasscodeModal = openChangePasscodeModal;
-        window.saveNewPasscode = saveNewPasscode;
-        window.closeModal = closeModal;
-        window.handleConfirmYes = handleConfirmYes;
-        window.previewUrlThumbnail = previewUrlThumbnail;
-        window.previewLinkCard = previewLinkCard;
-
-        // Initialize Firebase listeners and render initial views
-        async function initApp() {
-            const datePicker = document.getElementById('handbook-date-picker');
-            if (datePicker) {
-                datePicker.value = defaultDate;
-            }
-
-            // Initial render with default data
-            renderHandbook();
-            renderNotices();
-            renderReminders();
-            renderLinks();
-
-            try {
-                await signInAnonymously(auth);
-                isCloudConnected = true;
-
-                const handleSnapshotError = (err) => {
-                    console.warn("Cloud connection limited by Firestore Rules:", err);
-                    isCloudConnected = false;
-                    updateSyncStatus(false, "單機展示模式 (無雲端權限)");
-                };
-
-                // Sync Handbooks
-                onSnapshot(handbooksCollRef, (snapshot) => {
-                    snapshot.forEach(docSnap => {
-                        state.handbooks[docSnap.id] = docSnap.data();
-                    });
-                    renderHandbook();
-                    updateSyncStatus(true);
-                }, handleSnapshotError);
-
-                // Sync Notices
-                onSnapshot(noticesCollRef, (snapshot) => {
-                    const list = [];
-                    snapshot.forEach(docSnap => {
-                        list.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    if (list.length > 0) {
-                        state.notices = list;
-                        renderNotices();
-                    }
-                }, handleSnapshotError);
-
-                // Sync Reminders
-                onSnapshot(remindersCollRef, (snapshot) => {
-                    const list = [];
-                    snapshot.forEach(docSnap => {
-                        list.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    if (list.length > 0) {
-                        state.reminders = list;
-                        renderReminders();
-                    }
-                }, handleSnapshotError);
-
-                // Sync Links
-                onSnapshot(linksCollRef, (snapshot) => {
-                    const list = [];
-                    snapshot.forEach(docSnap => {
-                        list.push({ id: docSnap.id, ...docSnap.data() });
-                    });
-                    if (list.length > 0) {
-                        state.links = list;
-                        renderLinks();
-                    }
-                }, handleSnapshotError);
-
-                // Sync Passcode Config
-                onSnapshot(configDocRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data() && docSnap.data().passcode) {
-                        state.adminPasscode = String(docSnap.data().passcode);
-                    }
-                }, handleSnapshotError);
-
-            } catch (err) {
-                console.warn("Cloud connection fallback mode active:", err);
-                isCloudConnected = false;
-                updateSyncStatus(false, "單機展示模式 (無雲端權限)");
-            }
-        }
-
-        initApp();
     </script>
 </body>
 </html>
