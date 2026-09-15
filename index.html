@@ -543,14 +543,14 @@
 
         // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'class-106-board';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyDummyKeyForFallbackOnly12345",
-            authDomain: "class-106-board.firebaseapp.com",
-            projectId: "class-106-board",
-            storageBucket: "class-106-board.appspot.com",
-            messagingSenderId: "123456789012",
-            appId: "1:123456789012:web:abcdef123456"
-        };
+       const firebaseConfig = {
+    apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
+    authDomain: "class106-board.firebaseapp.com",
+    projectId: "class106-board",
+    storageBucket: "class106-board.firebasestorage.app",
+    messagingSenderId: "34565883734",
+    appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
+  };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
