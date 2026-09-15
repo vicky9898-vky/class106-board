@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS Script loaded FIRST before configuration -->
+    <!-- Tailwind CSS Script -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -137,8 +137,8 @@
                         💡
                     </div>
                     <div class="text-left">
-                        <div class="text-[10px] text-slate-400 font-medium">溫馨交代</div>
-                        <div class="text-xs md:text-sm font-bold">老師提醒</div>
+                        <div class="text-[10px] text-slate-400 font-medium">溫馨叮嚀</div>
+                        <div class="text-xs md:text-sm font-bold">旻慧老師的小提醒</div>
                     </div>
                 </div>
                 <span id="badge-reminder" class="hidden badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW</span>
@@ -241,7 +241,7 @@
                     </button>
                 </div>
 
-                <div id="notice-cards-container" class="space-y-3"></div>
+                <div id="notice-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
             </div>
         </section>
 
@@ -252,7 +252,7 @@
                     <div class="flex items-center space-x-3">
                         <span class="bg-white/90 text-emerald-600 p-2.5 rounded-2xl text-xl font-bold shadow-sm">💡</span>
                         <div>
-                            <h2 class="text-xl md:text-2xl font-black tracking-wide text-emerald-950">班級老師提醒</h2>
+                            <h2 class="text-xl md:text-2xl font-black tracking-wide text-emerald-950">旻慧老師的小提醒</h2>
                             <p class="text-xs md:text-sm text-emerald-800 font-medium">導師的生活叮嚀與即時通知</p>
                         </div>
                     </div>
@@ -298,7 +298,7 @@
             </div>
             <div>
                 <h3 class="text-lg font-black text-slate-800">教師管理登入</h3>
-                <p class="text-xs text-slate-400 mt-1">請輸入管理密碼（預設密碼：1234）</p>
+                <p class="text-xs text-slate-400 mt-1">請輸入管理密碼以開啟編輯權限</p>
             </div>
             <input type="password" id="admin-passcode-input" class="w-full text-center border-2 border-slate-200 rounded-xl p-3 text-lg font-bold tracking-widest focus:border-rose-400 focus:outline-none" placeholder="****">
             <div class="flex gap-2 pt-2">
@@ -342,11 +342,11 @@
         </div>
     </div>
 
-    <!-- Modal 3: Add Announcement Modal -->
+    <!-- Modal 3: Add/Edit Announcement Modal -->
     <div id="modal-notice-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-orange-800 flex items-center gap-2">
+                <h3 id="notice-modal-title" class="text-lg font-black text-orange-800 flex items-center gap-2">
                     <i class="fa-solid fa-bullhorn"></i> 新增校內公告
                 </h3>
                 <button onclick="closeModal('modal-notice-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -370,33 +370,34 @@
                     <label class="block font-bold text-orange-900 text-xs flex items-center gap-1">
                         <i class="fa-solid fa-image text-orange-500"></i> 附帶圖片 (可填網址或上傳檔案)
                     </label>
-                    <input type="url" id="add-notice-img-url" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="輸入圖片網址 (https://...)">
+                    <input type="url" id="add-notice-img-url" oninput="previewUrlThumbnail(this.value, 'notice-img-preview')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="輸入圖片網址 (https://...)">
                     <div class="text-center text-xs text-slate-400 font-bold my-1">- 或選擇手機/電腦檔案 -</div>
                     <input type="file" id="add-notice-img-file" accept="image/*" onchange="handleImageUpload(event, 'notice-img-preview', 'add-notice-img-url')" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-100 file:text-orange-700 hover:file:bg-orange-200">
                     <img id="notice-img-preview" class="hidden w-full max-h-40 object-cover rounded-xl mt-2 border border-slate-200">
                 </div>
 
-                <!-- Web Link Attachment -->
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                    <label class="block font-bold text-slate-700 text-xs mb-1 flex items-center gap-1">
+                <!-- Web Link Attachment with Live Thumbnail Preview -->
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+                    <label class="block font-bold text-slate-700 text-xs flex items-center gap-1">
                         <i class="fa-solid fa-link text-slate-500"></i> 附帶相關網址 / 附件連結
                     </label>
-                    <input type="url" id="add-notice-link-url" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="例如：https://school.edu.tw/info.pdf">
+                    <input type="url" id="add-notice-link-url" oninput="previewLinkCard(this.value, 'notice-link-preview-box')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="例如：https://school.edu.tw/info.pdf">
+                    <div id="notice-link-preview-box" class="hidden"></div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
                 <button onclick="closeModal('modal-notice-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="saveNewNotice()" class="px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white rounded-xl text-xs font-bold shadow-sm">新增公告</button>
+                <button id="save-notice-btn" onclick="saveNewNotice()" class="px-4 py-2 bg-orange-400 hover:bg-orange-500 text-white rounded-xl text-xs font-bold shadow-sm">儲存公告</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 4: Add Reminder Modal -->
+    <!-- Modal 4: Add/Edit Reminder Modal -->
     <div id="modal-reminder-editor" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b pb-3">
-                <h3 class="text-lg font-black text-emerald-800 flex items-center gap-2">
-                    <i class="fa-solid fa-lightbulb"></i> 新增老師叮嚀
+                <h3 id="reminder-modal-title" class="text-lg font-black text-emerald-800 flex items-center gap-2">
+                    <i class="fa-solid fa-lightbulb"></i> 新增旻慧老師的小提醒
                 </h3>
                 <button onclick="closeModal('modal-reminder-editor')" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
@@ -426,20 +427,23 @@
                     <label class="block font-bold text-emerald-900 text-xs flex items-center gap-1">
                         <i class="fa-solid fa-image text-emerald-500"></i> 附帶照片/圖解 (選擇檔案或輸入網址)
                     </label>
-                    <input type="url" id="add-reminder-img-url" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="網址 https://...">
+                    <input type="url" id="add-reminder-img-url" oninput="previewUrlThumbnail(this.value, 'reminder-img-preview')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="網址 https://...">
                     <input type="file" id="add-reminder-img-file" accept="image/*" onchange="handleImageUpload(event, 'reminder-img-preview', 'add-reminder-img-url')" class="w-full text-xs text-slate-500 file:mr-2 file:py-1 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-100 file:text-emerald-700 hover:file:bg-emerald-200">
                     <img id="reminder-img-preview" class="hidden w-full max-h-40 object-cover rounded-xl mt-2 border border-slate-200">
                 </div>
 
-                <!-- Web Link -->
-                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                    <label class="block font-bold text-slate-700 text-xs mb-1">附帶補充網址 (選填)</label>
-                    <input type="url" id="add-reminder-link-url" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="https://...">
+                <!-- Web Link Attachment with Live Thumbnail Preview -->
+                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+                    <label class="block font-bold text-slate-700 text-xs flex items-center gap-1">
+                        <i class="fa-solid fa-link text-slate-500"></i> 附帶補充網址 (選填)
+                    </label>
+                    <input type="url" id="add-reminder-link-url" oninput="previewLinkCard(this.value, 'reminder-link-preview-box')" class="w-full border border-slate-200 rounded-xl p-2 text-xs focus:outline-none" placeholder="https://...">
+                    <div id="reminder-link-preview-box" class="hidden"></div>
                 </div>
             </div>
             <div class="flex justify-end gap-2 pt-2 border-t">
                 <button onclick="closeModal('modal-reminder-editor')" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-bold">取消</button>
-                <button onclick="saveNewReminder()" class="px-4 py-2 bg-emerald-400 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm">新增提醒</button>
+                <button id="save-reminder-btn" onclick="saveNewReminder()" class="px-4 py-2 bg-emerald-400 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-sm">新增提醒</button>
             </div>
         </div>
     </div>
@@ -534,8 +538,8 @@
     <!-- Firebase Cloud Database Integration Module -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Configuration
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'class-106-board';
@@ -552,346 +556,335 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Firestore Public Paths (Rule 1 Compliance)
+        let isCloudConnected = false;
+
+        // Firestore Public Paths
         const handbooksCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'handbooks');
         const noticesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'notices');
         const remindersCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'reminders');
         const linksCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'links');
         const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
 
+        const defaultDate = new Date().toISOString().split('T')[0];
+
         // Application State
         const state = {
             isAdmin: false,
             adminPasscode: '1234',
             currentCategory: 'handbook', 
-            selectedDate: '2026-09-14',
+            selectedDate: defaultDate,
+            editingNoticeId: null,
+            editingReminderId: null,
             hasNew: {
                 handbook: true,
                 notice: true,
                 reminder: true,
                 links: true
             },
-            handbooks: {},
-            notices: [],
-            reminders: [],
-            links: []
-        };
-
-        let confirmCallback = null;
-        let isCloudConnected = false;
-
-        // Default initial seed data
-        const initialSeedData = {
             handbooks: {
-                '2026-09-14': {
-                    dateDisplay: "2026年09月14日 (星期一)",
-                    homework: [
-                        "1. 國語（一）生字本完成 P.5 - P.8",
-                        "2. 數學習作寫完第 12 頁",
-                        "3. 朗讀國語課文第一課 2 遍給家長聽",
-                        "4. 簽訂正數學小考卷"
-                    ],
-                    bring: [
-                        "運動水壺（已裝水）",
-                        "國語/數學課本與字典",
-                        "跳繩（體育課用）",
-                        "個人抹布與餐具盒"
-                    ],
-                    teacherNote: "各位家長好！一年六班的孩子逐漸適應小一作息囉！明天有體育課，請記得讓孩子穿著舒適的運動鞋，並攜帶水壺補充水分。"
-                },
-                '2026-09-11': {
-                    dateDisplay: "2026年09月11日 (星期五)",
-                    homework: [
-                        "1. 國語練習簿第 2 頁",
-                        "2. 完成學習單乙張",
-                        "3. 閱讀課外書本 15 分鐘"
-                    ],
-                    bring: [
-                        "借書證（前往圖書館）",
-                        "12色水彩與圍裙（美勞課）"
-                    ],
-                    teacherNote: "祝大家週末愉快！別忘了撥空陪伴孩子進行親子共讀喔。"
+                [defaultDate]: {
+                    dateDisplay: defaultDate,
+                    homework: ["1. 國語第 1 課生字延伸練習", "2. 數學習作 P.12 - P.13", "3. 閱讀課外書 15 分鐘"],
+                    bring: ["跳繩", "水壺", "黃色帽子"],
+                    teacherNote: "明天有體育課，請記得讓孩子穿著運動服與運動鞋喔！"
                 }
             },
             notices: [
                 {
-                    id: '101',
-                    title: "【健康中心】小一學童視力與牙齒檢查通知",
-                    tag: "健康中心",
-                    date: "2026-09-14",
+                    id: '1',
+                    title: '10月份學校校慶運動會預告',
+                    tag: '學務處',
+                    date: defaultDate,
                     isNew: true,
-                    content: "學校將於下週二進行小一學童基礎視力與塗氟牙齒檢查，請記得於本週末前繳交家長同意書。",
-                    imageUrl: "https://placehold.co/600x300/fed7aa/ea580c?text=%E5%AD%B8%E7%AB%A5%E5%81%A5%E6%AA%92%E8%AA%AC%E6%98%8E",
-                    linkUrl: "https://example.com"
-                },
-                {
-                    id: '102',
-                    title: "【學務處】開學親師座談會邀請函",
-                    tag: "學務處",
-                    date: "2026-09-12",
-                    isNew: false,
-                    content: "本學期親師座談會定於 9 月 19 日（星期六）上午 9:00 於一年六班教室舉行，誠摯邀請各位家長蒞臨指導。",
-                    imageUrl: "",
-                    linkUrl: ""
+                    content: '親愛的家長您好，本學期學校運動會預定於 10 月 25 日舉行，歡迎家長共襄盛舉。詳細時程將於近期發放通知單。',
+                    imageUrl: '',
+                    linkUrl: ''
                 }
             ],
             reminders: [
                 {
-                    id: '201',
-                    icon: "👟",
-                    title: "週二體育課服裝提醒",
-                    date: "2026-09-14",
+                    id: '1',
+                    icon: '👟',
+                    title: '明日穿著體育服',
+                    date: defaultDate,
                     isNew: true,
-                    content: "明天有體育課，請穿著學校運動服與運動鞋，並隨身攜帶個人跳繩與水壺。",
-                    imageUrl: "",
-                    linkUrl: ""
-                },
-                {
-                    id: '202',
-                    icon: "🎨",
-                    title: "週三美勞課工具準備",
-                    date: "2026-09-13",
-                    isNew: false,
-                    content: "後天美勞課需使用 12 色水彩與圍裙，請家長協助檢查工具盒是否完整。",
-                    imageUrl: "",
-                    linkUrl: ""
+                    content: '明日星期三有體育課，請幫孩子穿著便於運動的球鞋與體育服。',
+                    imageUrl: '',
+                    linkUrl: ''
                 }
             ],
             links: [
                 {
-                    id: '301',
-                    icon: "📘",
-                    title: "教育部國語小字典",
-                    tag: "國語學習",
-                    desc: "適合小一學生查閱生字、筆順與注音的最佳工具。",
-                    url: "https://dict.mini.dict.edu.tw/"
+                    id: '1',
+                    icon: '📚',
+                    title: '均一教育平台',
+                    url: 'https://www.junyiacademy.org',
+                    desc: '提供國語、數學各單元自主複習影片與練習題',
+                    tag: '自主學習'
                 },
                 {
-                    id: '302',
-                    icon: "💡",
-                    title: "均一教育平台",
-                    tag: "自主學習",
-                    desc: "提供國小數學與自然等豐富線上互動練習。",
-                    url: "https://www.junyiacademy.org/"
-                },
-                {
-                    id: '303',
-                    icon: "🏫",
-                    title: "台北酷課雲 / 學習網",
-                    tag: "綜合資源",
-                    desc: "國小各科學習影片與班級線上閱讀打卡區。",
-                    url: "https://cooc.tp.edu.tw/"
+                    id: '2',
+                    icon: '📖',
+                    title: '台北酷課雲 / 數位學習資源',
+                    url: 'https://cooc.tp.edu.tw',
+                    desc: '豐富的線上閱讀與互動教學資源',
+                    tag: '閱讀學習'
                 }
             ]
         };
 
-        // Authenticate & Attach Firestore Listeners
-        async function initCloudDatabase() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-                console.log("Cloud Auth Success");
-                isCloudConnected = true;
-                updateSyncStatusUI(true);
+        let confirmCallback = null;
 
-                // 1. Listen for Handbooks
-                onSnapshot(handbooksCollRef, (snapshot) => {
-                    if (snapshot.empty) {
-                        // Seed initial handbooks
-                        Object.entries(initialSeedData.handbooks).forEach(([dateKey, hbData]) => {
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'handbooks', dateKey), hbData);
-                        });
-                    } else {
-                        const hbs = {};
-                        snapshot.forEach(docSnap => {
-                            hbs[docSnap.id] = docSnap.data();
-                        });
-                        state.handbooks = hbs;
-                        renderHandbook();
-                    }
-                }, (err) => console.warn("Firestore Handbooks Read Warning:", err));
-
-                // 2. Listen for Notices
-                onSnapshot(noticesCollRef, (snapshot) => {
-                    if (snapshot.empty) {
-                        initialSeedData.notices.forEach(item => {
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', String(item.id)), item);
-                        });
-                    } else {
-                        const arr = [];
-                        snapshot.forEach(docSnap => {
-                            arr.push({ id: docSnap.id, ...docSnap.data() });
-                        });
-                        arr.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-                        state.notices = arr;
-                        renderNotices();
-                    }
-                }, (err) => console.warn("Firestore Notices Read Warning:", err));
-
-                // 3. Listen for Reminders
-                onSnapshot(remindersCollRef, (snapshot) => {
-                    if (snapshot.empty) {
-                        initialSeedData.reminders.forEach(item => {
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', String(item.id)), item);
-                        });
-                    } else {
-                        const arr = [];
-                        snapshot.forEach(docSnap => {
-                            arr.push({ id: docSnap.id, ...docSnap.data() });
-                        });
-                        arr.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')));
-                        state.reminders = arr;
-                        renderReminders();
-                    }
-                }, (err) => console.warn("Firestore Reminders Read Warning:", err));
-
-                // 4. Listen for Links
-                onSnapshot(linksCollRef, (snapshot) => {
-                    if (snapshot.empty) {
-                        initialSeedData.links.forEach(item => {
-                            setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'links', String(item.id)), item);
-                        });
-                    } else {
-                        const arr = [];
-                        snapshot.forEach(docSnap => {
-                            arr.push({ id: docSnap.id, ...docSnap.data() });
-                        });
-                        state.links = arr;
-                        renderLinks();
-                    }
-                }, (err) => console.warn("Firestore Links Read Warning:", err));
-
-                // 5. Listen for Config (Admin Passcode)
-                onSnapshot(configDocRef, (docSnap) => {
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.passcode) state.adminPasscode = data.passcode;
-                    } else {
-                        setDoc(configDocRef, { passcode: '1234' });
-                    }
-                }, (err) => console.warn("Firestore Config Read Warning:", err));
-
-            } catch (error) {
-                console.error("Firestore Init Error, falling back to Local Storage mode:", error);
-                isCloudConnected = false;
-                updateSyncStatusUI(false);
-                loadLocalStorageFallback();
-            }
-        }
-
-        function updateSyncStatusUI(connected) {
-            const el = document.getElementById('sync-status');
-            if (!el) return;
-            if (connected) {
-                el.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700";
-                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 雲端資料同步中`;
+        function updateSyncStatus(isOnline, message) {
+            const statusEl = document.getElementById('sync-status');
+            if (!statusEl) return;
+            if (isOnline) {
+                statusEl.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-700";
+                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> ${message || '雲端資料同步中'}`;
             } else {
-                el.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-700";
-                el.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> 離線/本機模式`;
+                statusEl.className = "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800";
+                statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500"></span> ${message || '單機展示模式 (無雲端權限)'}`;
             }
         }
 
-        function loadLocalStorageFallback() {
-            state.handbooks = initialSeedData.handbooks;
-            state.notices = initialSeedData.notices;
-            state.reminders = initialSeedData.reminders;
-            state.links = initialSeedData.links;
-            renderHandbook();
-            renderNotices();
-            renderReminders();
-            renderLinks();
+        function createLinkPreviewHTML(url) {
+            if (!url) return '';
+            try {
+                const parsedUrl = new URL(url);
+                const domain = parsedUrl.hostname;
+                const faviconUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                
+                return `
+                    <a href="${url}" target="_blank" class="flex items-center gap-3 p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl transition group">
+                        <img src="${faviconUrl}" onerror="this.src='https://placehold.co/32x32/cbd5e1/475569?text=WEB'" class="w-7 h-7 rounded-lg object-contain bg-white p-1 border border-slate-100 shadow-sm flex-shrink-0">
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-slate-700 truncate group-hover:text-rose-600 transition">${domain}</div>
+                            <div class="text-[10px] text-slate-400 truncate">${url}</div>
+                        </div>
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-400 group-hover:text-rose-500 transition mr-1"></i>
+                    </a>
+                `;
+            } catch (e) {
+                return `
+                    <a href="${url}" target="_blank" class="inline-flex items-center gap-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold px-3 py-1.5 rounded-xl transition">
+                        <i class="fa-solid fa-link"></i> 開啟網址
+                    </a>
+                `;
+            }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const now = new Date();
-            const dateStr = `今天：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-            
-            const picker = document.getElementById('handbook-date-picker');
-            const todayIso = now.toISOString().split('T')[0];
-            state.selectedDate = todayIso;
-            if (picker) picker.value = state.selectedDate;
+        function previewUrlThumbnail(url, imgPreviewId) {
+            const previewEl = document.getElementById(imgPreviewId);
+            if (!previewEl) return;
+            if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image'))) {
+                previewEl.src = url;
+                previewEl.classList.remove('hidden');
+            } else {
+                previewEl.classList.add('hidden');
+            }
+        }
 
-            renderHandbook();
-            renderNotices();
-            renderReminders();
-            renderLinks();
-            updateNewBadges();
-
-            initCloudDatabase();
-        });
-
-        function onHandbookDateChange(dateVal) {
-            if (!dateVal) return;
-            state.selectedDate = dateVal;
-            renderHandbook();
+        function previewLinkCard(url, previewBoxId) {
+            const box = document.getElementById(previewBoxId);
+            if (!box) return;
+            if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+                box.innerHTML = createLinkPreviewHTML(url);
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+                box.innerHTML = '';
+            }
         }
 
         function renderHandbook() {
-            const dateKey = state.selectedDate;
-            const hb = state.handbooks[dateKey];
-            
-            const picker = document.getElementById('handbook-date-picker');
-            if (picker) picker.value = dateKey;
-
-            const tagEl = document.getElementById('handbook-date-tag');
-            if (tagEl) {
-                tagEl.innerText = hb ? (hb.dateDisplay || dateKey) : `${dateKey} (尚未發布)`;
-            }
-
             const hwContainer = document.getElementById('handbook-homework-list');
             const bringBlock = document.getElementById('handbook-bring-block');
             const bringList = document.getElementById('handbook-bring-list');
             const noteBlock = document.getElementById('handbook-note-block');
             const noteText = document.getElementById('handbook-teacher-note');
+            const dateTag = document.getElementById('handbook-date-tag');
+
+            const dateKey = state.selectedDate;
+            const hb = state.handbooks[dateKey];
+
+            if (dateTag) dateTag.innerText = hb?.dateDisplay || dateKey;
 
             if (!hb) {
-                hwContainer.innerHTML = `
-                    <div class="bg-sky-50 border border-sky-100 p-6 rounded-2xl text-center space-y-2">
-                        <div class="text-3xl">📅</div>
-                        <p class="text-sm font-bold text-sky-800">${dateKey} 尚無發布聯絡本紀錄</p>
-                        <p class="text-xs text-slate-400">${state.isAdmin ? '您正處於教師後台模式，可點擊右上角「編輯當日聯絡本」來新增此日內容。' : '請切換至其他日期查看聯絡本。'}</p>
-                    </div>
-                `;
-                bringBlock.classList.add('hidden');
-                noteBlock.classList.add('hidden');
+                if (hwContainer) {
+                    hwContainer.innerHTML = `
+                        <div class="text-center py-6 text-slate-400 font-medium">
+                            <p>尚無 ${dateKey} 的聯絡本內容</p>
+                        </div>
+                    `;
+                }
+                if (bringBlock) bringBlock.classList.add('hidden');
+                if (noteBlock) noteBlock.classList.add('hidden');
                 return;
             }
 
-            // Homework list
-            if (hb.homework && hb.homework.length > 0) {
-                hwContainer.innerHTML = hb.homework.map((item) => `
-                    <div class="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-sky-200 transition">
-                        <span class="text-sky-500 font-bold">•</span>
-                        <span class="text-xs md:text-sm font-medium text-slate-700 leading-relaxed">${item}</span>
+            if (hwContainer) {
+                if (hb.homework && hb.homework.length > 0) {
+                    hwContainer.innerHTML = hb.homework.map(item => `
+                        <div class="flex items-start space-x-2.5 p-2.5 rounded-xl bg-slate-50/80 border border-slate-100 hover:border-sky-200 transition">
+                            <span class="text-sky-500 font-bold">•</span>
+                            <span class="text-xs md:text-sm font-medium text-slate-700 leading-relaxed">${item}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    hwContainer.innerHTML = `<p class="text-xs text-slate-400 italic">本日尚無交代作業</p>`;
+                }
+            }
+
+            if (bringBlock && bringList) {
+                if (hb.bring && hb.bring.length > 0 && hb.bring.some(i => i.trim() !== '')) {
+                    bringBlock.classList.remove('hidden');
+                    bringList.innerHTML = hb.bring.filter(i => i.trim() !== '').map(item => `
+                        <li class="flex items-center space-x-2 bg-amber-50/80 border border-amber-200/60 p-2.5 rounded-xl text-amber-900">
+                            <span class="text-amber-500">🎒</span>
+                            <span class="text-xs md:text-sm font-bold">${item}</span>
+                        </li>
+                    `).join('');
+                } else {
+                    bringBlock.classList.add('hidden');
+                }
+            }
+
+            if (noteBlock && noteText) {
+                if (hb.teacherNote && hb.teacherNote.trim() !== '') {
+                    noteBlock.classList.remove('hidden');
+                    noteText.innerText = hb.teacherNote;
+                } else {
+                    noteBlock.classList.add('hidden');
+                }
+            }
+        }
+
+        function renderNotices() {
+            const container = document.getElementById('notice-cards-container');
+            if (!container) return;
+            if (state.notices.length === 0) {
+                container.innerHTML = `<div class="col-span-2 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無校內公告</div>`;
+                return;
+            }
+
+            container.innerHTML = state.notices.map(item => `
+                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-orange-100 hover:shadow-md transition flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-200">
+                                    ${item.tag || '校園公告'}
+                                </span>
+                                ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
+                            </div>
+                            <div class="flex items-center gap-1">
+                                ${state.isAdmin ? `
+                                    <button onclick="openEditNoticeModal('${item.id}')" class="text-orange-600 hover:text-orange-800 p-1 text-xs" title="修改公告"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="confirmDeleteNotice('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1" title="刪除公告"><i class="fa-solid fa-trash"></i></button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-base md:text-lg text-slate-800 mb-2">${item.title}</h3>
+                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
+
+                        ${item.imageUrl ? `
+                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-100">
+                                <img src="${item.imageUrl}" alt="公告圖片" class="w-full max-h-48 object-cover hover:scale-105 transition duration-300">
+                            </div>
+                        ` : ''}
+
+                        ${item.linkUrl ? `
+                            <div class="mt-3">
+                                ${createLinkPreviewHTML(item.linkUrl)}
+                            </div>
+                        ` : ''}
                     </div>
-                `).join('');
-            } else {
-                hwContainer.innerHTML = `<p class="text-xs text-slate-400 italic">本日尚無交代作業</p>`;
+                    <div class="pt-2 border-t border-slate-100 text-right">
+                        <span class="text-[11px] text-slate-400">發布日期：${item.date}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderReminders() {
+            const container = document.getElementById('reminder-cards-container');
+            if (!container) return;
+            if (state.reminders.length === 0) {
+                container.innerHTML = `<div class="col-span-2 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無旻慧老師的小提醒</div>`;
+                return;
             }
 
-            // Bring items list
-            if (hb.bring && hb.bring.length > 0 && hb.bring.some(i => i.trim() !== '')) {
-                bringBlock.classList.remove('hidden');
-                bringList.innerHTML = hb.bring.filter(i => i.trim() !== '').map(item => `
-                    <li class="flex items-center space-x-2 bg-amber-50/80 border border-amber-200/60 p-2.5 rounded-xl text-amber-900">
-                        <span class="text-amber-500">🎒</span>
-                        <span class="text-xs md:text-sm font-bold">${item}</span>
-                    </li>
-                `).join('');
-            } else {
-                bringBlock.classList.add('hidden');
+            container.innerHTML = state.reminders.map(item => `
+                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-emerald-100 hover:shadow-md transition flex flex-col justify-between space-y-3">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-2xl">${item.icon || '💡'}</span>
+                                <h3 class="font-bold text-base md:text-lg text-emerald-900">${item.title}</h3>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
+                                ${state.isAdmin ? `
+                                    <button onclick="openEditReminderModal('${item.id}')" class="text-emerald-600 hover:text-emerald-800 p-1 text-xs ml-1" title="修改提醒"><i class="fa-solid fa-pen"></i></button>
+                                    <button onclick="confirmDeleteReminder('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1" title="刪除提醒"><i class="fa-solid fa-trash"></i></button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
+
+                        ${item.imageUrl ? `
+                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-100">
+                                <img src="${item.imageUrl}" alt="提醒圖片" class="w-full max-h-48 object-cover">
+                            </div>
+                        ` : ''}
+
+                        ${item.linkUrl ? `
+                            <div class="mt-3">
+                                ${createLinkPreviewHTML(item.linkUrl)}
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="pt-2 border-t border-slate-100 text-right">
+                        <span class="text-[11px] text-slate-400">提醒時間：${item.date}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLinks() {
+            const container = document.getElementById('links-cards-container');
+            if (!container) return;
+            if (state.links.length === 0) {
+                container.innerHTML = `<div class="col-span-3 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無設定常用網站</div>`;
+                return;
             }
 
-            // Teacher note block
-            if (hb.teacherNote && hb.teacherNote.trim() !== '') {
-                noteBlock.classList.remove('hidden');
-                noteText.innerText = hb.teacherNote;
-            } else {
-                noteBlock.classList.add('hidden');
-            }
+            container.innerHTML = state.links.map(item => `
+                <div class="bg-white text-slate-800 p-4 rounded-2xl shadow-sm border border-purple-100 hover:shadow-md transition flex flex-col justify-between relative">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-3xl">${item.icon || '🌐'}</span>
+                            <div class="flex items-center gap-1">
+                                <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
+                                    ${item.tag || '常用連結'}
+                                </span>
+                                ${state.isAdmin ? `<button onclick="confirmDeleteLink('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1"><i class="fa-solid fa-trash"></i></button>` : ''}
+                            </div>
+                        </div>
+                        <h3 class="font-bold text-base text-slate-800 mb-1">${item.title}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed mb-4">${item.desc || ''}</p>
+                    </div>
+                    <a href="${item.url}" target="_blank" class="w-full bg-purple-400 hover:bg-purple-500 text-white font-bold text-xs py-2 rounded-xl transition shadow-sm text-center flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 開啟網站
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        function onHandbookDateChange(dateValue) {
+            if (!dateValue) return;
+            state.selectedDate = dateValue;
+            renderHandbook();
         }
 
         function openHandbookEditor() {
@@ -931,14 +924,14 @@
                 try {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'handbooks', dateKey), hbObj);
                 } catch (e) {
-                    console.error("Cloud Save Handbook Error:", e);
+                    console.warn("Cloud Save Handbook Error:", e);
                 }
             }
 
             renderHandbook();
             updateNewBadges();
             closeModal('modal-handbook-editor');
-            showToast(`${dateKey} 聯絡本已成功同步至雲端！`);
+            showToast(`${dateKey} 聯絡本已成功更新！`);
         }
 
         function switchCategory(category) {
@@ -988,136 +981,45 @@
                     const dataUrl = e.target.result;
                     document.getElementById(inputUrlId).value = dataUrl;
                     const imgPreview = document.getElementById(previewId);
-                    imgPreview.src = dataUrl;
-                    imgPreview.classList.remove('hidden');
+                    if (imgPreview) {
+                        imgPreview.src = dataUrl;
+                        imgPreview.classList.remove('hidden');
+                    }
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        function renderNotices() {
-            const container = document.getElementById('notice-cards-container');
-            if (!container) return;
-            if (state.notices.length === 0) {
-                container.innerHTML = `<div class="bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無校內公告</div>`;
-                return;
-            }
-
-            container.innerHTML = state.notices.map(item => `
-                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-orange-100 hover:shadow-md transition relative space-y-3">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-2">
-                            <span class="bg-orange-100 text-orange-700 text-xs font-bold px-2.5 py-1 rounded-lg border border-orange-200">
-                                ${item.tag || '學校通知'}
-                            </span>
-                            ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-400 font-medium">${item.date}</span>
-                            ${state.isAdmin ? `<button onclick="confirmDeleteNotice('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs"><i class="fa-solid fa-trash"></i></button>` : ''}
-                        </div>
-                    </div>
-                    <h3 class="font-bold text-base md:text-lg text-slate-800">${item.title}</h3>
-                    <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
-
-                    ${item.imageUrl ? `
-                        <div class="mt-2 rounded-xl overflow-hidden border border-slate-100">
-                            <img src="${item.imageUrl}" alt="公告圖片" class="w-full max-h-64 object-cover hover:scale-105 transition duration-300">
-                        </div>
-                    ` : ''}
-
-                    ${item.linkUrl ? `
-                        <div class="pt-2">
-                            <a href="${item.linkUrl}" target="_blank" class="inline-flex items-center gap-1.5 bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-xs font-bold px-3 py-1.5 rounded-xl transition">
-                                <i class="fa-solid fa-link"></i> 開啟相關網址 / 附件檔
-                            </a>
-                        </div>
-                    ` : ''}
-                </div>
-            `).join('');
-        }
-
-        function renderReminders() {
-            const container = document.getElementById('reminder-cards-container');
-            if (!container) return;
-            if (state.reminders.length === 0) {
-                container.innerHTML = `<div class="col-span-2 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無老師提醒</div>`;
-                return;
-            }
-
-            container.innerHTML = state.reminders.map(item => `
-                <div class="bg-white text-slate-800 p-4 md:p-5 rounded-2xl shadow-sm border border-emerald-100 hover:shadow-md transition relative flex flex-col justify-between space-y-3">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-2xl">${item.icon || '💡'}</span>
-                                <h3 class="font-bold text-base md:text-lg text-emerald-900">${item.title}</h3>
-                            </div>
-                            <div class="flex items-center gap-1">
-                                ${item.isNew ? '<span class="badge-pulse bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full">NEW!</span>' : ''}
-                                ${state.isAdmin ? `<button onclick="confirmDeleteReminder('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-2"><i class="fa-solid fa-trash"></i></button>` : ''}
-                            </div>
-                        </div>
-                        <p class="text-xs md:text-sm text-slate-600 leading-relaxed whitespace-pre-line">${item.content}</p>
-
-                        ${item.imageUrl ? `
-                            <div class="mt-3 rounded-xl overflow-hidden border border-slate-100">
-                                <img src="${item.imageUrl}" alt="提醒圖片" class="w-full max-h-48 object-cover">
-                            </div>
-                        ` : ''}
-
-                        ${item.linkUrl ? `
-                            <div class="mt-2">
-                                <a href="${item.linkUrl}" target="_blank" class="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-xs font-bold px-3 py-1.5 rounded-xl transition">
-                                    <i class="fa-solid fa-link"></i> 點此開啟相關網頁
-                                </a>
-                            </div>
-                        ` : ''}
-                    </div>
-                    <div class="pt-2 border-t border-slate-100 text-right">
-                        <span class="text-[11px] text-slate-400">提醒時間：${item.date}</span>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function renderLinks() {
-            const container = document.getElementById('links-cards-container');
-            if (!container) return;
-            if (state.links.length === 0) {
-                container.innerHTML = `<div class="col-span-3 bg-white text-slate-400 p-8 rounded-2xl text-center text-sm">目前尚無設定常用網站</div>`;
-                return;
-            }
-
-            container.innerHTML = state.links.map(item => `
-                <div class="bg-white text-slate-800 p-4 rounded-2xl shadow-sm border border-purple-100 hover:shadow-md transition flex flex-col justify-between relative">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-3xl">${item.icon || '🌐'}</span>
-                            <div class="flex items-center gap-1">
-                                <span class="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-0.5 rounded-md">
-                                    ${item.tag || '常用連結'}
-                                </span>
-                                ${state.isAdmin ? `<button onclick="confirmDeleteLink('${item.id}')" class="text-red-400 hover:text-red-600 p-1 text-xs ml-1"><i class="fa-solid fa-trash"></i></button>` : ''}
-                            </div>
-                        </div>
-                        <h3 class="font-bold text-base text-slate-800 mb-1">${item.title}</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed mb-4">${item.desc || ''}</p>
-                    </div>
-                    <a href="${item.url}" target="_blank" class="w-full bg-purple-400 hover:bg-purple-500 text-white font-bold text-xs py-2 rounded-xl transition shadow-sm text-center flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 開啟網站
-                    </a>
-                </div>
-            `).join('');
-        }
-
         function openAddNoticeModal() {
+            state.editingNoticeId = null;
+            document.getElementById('notice-modal-title').innerHTML = `<i class="fa-solid fa-bullhorn"></i> 新增校內公告`;
+            document.getElementById('save-notice-btn').innerText = '新增公告';
             document.getElementById('add-notice-title').value = '';
             document.getElementById('add-notice-tag').value = '教務處';
             document.getElementById('add-notice-content').value = '';
             document.getElementById('add-notice-img-url').value = '';
             document.getElementById('add-notice-link-url').value = '';
             document.getElementById('notice-img-preview').classList.add('hidden');
+            document.getElementById('notice-link-preview-box').classList.add('hidden');
+            document.getElementById('modal-notice-editor').classList.remove('hidden');
+        }
+
+        function openEditNoticeModal(id) {
+            const item = state.notices.find(n => String(n.id) === String(id));
+            if (!item) return;
+            state.editingNoticeId = id;
+            document.getElementById('notice-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 修改校內公告`;
+            document.getElementById('save-notice-btn').innerText = '儲存修改';
+
+            document.getElementById('add-notice-title').value = item.title || '';
+            document.getElementById('add-notice-tag').value = item.tag || '';
+            document.getElementById('add-notice-content').value = item.content || '';
+            document.getElementById('add-notice-img-url').value = item.imageUrl || '';
+            document.getElementById('add-notice-link-url').value = item.linkUrl || '';
+
+            previewUrlThumbnail(item.imageUrl || '', 'notice-img-preview');
+            previewLinkCard(item.linkUrl || '', 'notice-link-preview-box');
+
             document.getElementById('modal-notice-editor').classList.remove('hidden');
         }
 
@@ -1134,34 +1036,70 @@
             }
 
             const today = new Date().toISOString().split('T')[0];
-            const newId = String(Date.now());
-            const newNotice = {
-                title: title,
-                tag: tag || '校園公告',
-                date: today,
-                isNew: true,
-                content: content,
-                imageUrl: imageUrl,
-                linkUrl: linkUrl
-            };
 
-            if (isCloudConnected) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', newId), newNotice);
+            if (state.editingNoticeId) {
+                const editId = String(state.editingNoticeId);
+                const updatedNotice = {
+                    title: title,
+                    tag: tag || '校園公告',
+                    content: content,
+                    imageUrl: imageUrl,
+                    linkUrl: linkUrl
+                };
+
+                if (isCloudConnected) {
+                    try {
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', editId), updatedNotice, { merge: true });
+                    } catch (e) {
+                        console.warn("Cloud Update Notice Error:", e);
+                    }
+                } else {
+                    const idx = state.notices.findIndex(n => String(n.id) === editId);
+                    if (idx !== -1) {
+                        state.notices[idx] = { ...state.notices[idx], ...updatedNotice };
+                    }
+                    renderNotices();
+                }
+                showToast("校內公告已順利更新！📢");
             } else {
-                state.notices.unshift({ id: newId, ...newNotice });
-                renderNotices();
+                const newId = String(Date.now());
+                const newNotice = {
+                    title: title,
+                    tag: tag || '校園公告',
+                    date: today,
+                    isNew: true,
+                    content: content,
+                    imageUrl: imageUrl,
+                    linkUrl: linkUrl
+                };
+
+                if (isCloudConnected) {
+                    try {
+                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', newId), newNotice);
+                    } catch (e) {
+                        console.warn("Cloud Create Notice Error:", e);
+                    }
+                } else {
+                    state.notices.unshift({ id: newId, ...newNotice });
+                    renderNotices();
+                }
+
+                state.hasNew.notice = true;
+                updateNewBadges();
+                showToast("校內公告已同步發布！📢");
             }
 
-            state.hasNew.notice = true;
-            updateNewBadges();
             closeModal('modal-notice-editor');
-            showToast("校內公告已同步發布！📢");
         }
 
         function confirmDeleteNotice(id) {
             showConfirmDialog("確定要刪除這筆校內公告嗎？", async () => {
                 if (isCloudConnected) {
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', String(id)));
+                    try {
+                        await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'notices', String(id)));
+                    } catch (e) {
+                        console.warn("Cloud Delete Notice Error:", e);
+                    }
                 } else {
                     state.notices = state.notices.filter(item => String(item.id) !== String(id));
                     renderNotices();
@@ -1171,11 +1109,34 @@
         }
 
         function openAddReminderModal() {
+            state.editingReminderId = null;
+            document.getElementById('reminder-modal-title').innerHTML = `<i class="fa-solid fa-lightbulb"></i> 新增老師叮嚀`;
+            document.getElementById('save-reminder-btn').innerText = '新增提醒';
             document.getElementById('add-reminder-title').value = '';
             document.getElementById('add-reminder-content').value = '';
             document.getElementById('add-reminder-img-url').value = '';
             document.getElementById('add-reminder-link-url').value = '';
             document.getElementById('reminder-img-preview').classList.add('hidden');
+            document.getElementById('reminder-link-preview-box').classList.add('hidden');
+            document.getElementById('modal-reminder-editor').classList.remove('hidden');
+        }
+
+        function openEditReminderModal(id) {
+            const item = state.reminders.find(r => String(r.id) === String(id));
+            if (!item) return;
+            state.editingReminderId = id;
+            document.getElementById('reminder-modal-title').innerHTML = `<i class="fa-solid fa-pen-to-square"></i> 修改老師叮嚀`;
+            document.getElementById('save-reminder-btn').innerText = '儲存修改';
+            
+            document.getElementById('add-reminder-icon').value = item.icon || '👟';
+            document.getElementById('add-reminder-title').value = item.title || '';
+            document.getElementById('add-reminder-content').value = item.content || '';
+            document.getElementById('add-reminder-img-url').value = item.imageUrl || '';
+            document.getElementById('add-reminder-link-url').value = item.linkUrl || '';
+            
+            previewUrlThumbnail(item.imageUrl || '', 'reminder-img-preview');
+            previewLinkCard(item.linkUrl || '', 'reminder-link-preview-box');
+            
             document.getElementById('modal-reminder-editor').classList.remove('hidden');
         }
 
@@ -1192,28 +1153,52 @@
             }
 
             const today = new Date().toISOString().split('T')[0];
-            const newId = String(Date.now());
-            const newReminder = {
-                icon: icon,
-                title: title,
-                date: today,
-                isNew: true,
-                content: content,
-                imageUrl: imageUrl,
-                linkUrl: linkUrl
-            };
 
-            if (isCloudConnected) {
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', newId), newReminder);
+            if (state.editingReminderId) {
+                const editId = String(state.editingReminderId);
+                const updatedData = {
+                    icon: icon,
+                    title: title,
+                    content: content,
+                    imageUrl: imageUrl,
+                    linkUrl: linkUrl
+                };
+
+                if (isCloudConnected) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', editId), updatedData, { merge: true });
+                } else {
+                    const idx = state.reminders.findIndex(r => String(r.id) === editId);
+                    if (idx !== -1) {
+                        state.reminders[idx] = { ...state.reminders[idx], ...updatedData };
+                    }
+                    renderReminders();
+                }
+                showToast("老師提醒已順利完成修改！✏️");
             } else {
-                state.reminders.unshift({ id: newId, ...newReminder });
-                renderReminders();
+                const newId = String(Date.now());
+                const newReminder = {
+                    icon: icon,
+                    title: title,
+                    date: today,
+                    isNew: true,
+                    content: content,
+                    imageUrl: imageUrl,
+                    linkUrl: linkUrl
+                };
+
+                if (isCloudConnected) {
+                    await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'reminders', newId), newReminder);
+                } else {
+                    state.reminders.unshift({ id: newId, ...newReminder });
+                    renderReminders();
+                }
+
+                state.hasNew.reminder = true;
+                updateNewBadges();
+                showToast("老師提醒已同步發布！💡");
             }
 
-            state.hasNew.reminder = true;
-            updateNewBadges();
             closeModal('modal-reminder-editor');
-            showToast("老師提醒已同步發布！💡");
         }
 
         function confirmDeleteReminder(id) {
@@ -1328,12 +1313,20 @@
             }
 
             state.adminPasscode = newPwd;
+
             if (isCloudConnected) {
-                await setDoc(configDocRef, { passcode: newPwd }, { merge: true });
+                try {
+                    await setDoc(configDocRef, { passcode: newPwd }, { merge: true });
+                    showToast("管理密碼已成功修改並同步至雲端！🔑");
+                } catch (e) {
+                    console.warn("Cloud Save Passcode Error:", e);
+                    showToast("已更新當前密碼（雲端同步受限）");
+                }
+            } else {
+                showToast("已更新當前密碼（單機展示模式）🔑");
             }
 
             closeModal('modal-change-passcode');
-            showToast("管理密碼已成功修改並同步！🔑");
         }
 
         function updateAdminUI() {
@@ -1399,9 +1392,11 @@
         window.switchCategory = switchCategory;
         window.handleImageUpload = handleImageUpload;
         window.openAddNoticeModal = openAddNoticeModal;
+        window.openEditNoticeModal = openEditNoticeModal;
         window.saveNewNotice = saveNewNotice;
         window.confirmDeleteNotice = confirmDeleteNotice;
         window.openAddReminderModal = openAddReminderModal;
+        window.openEditReminderModal = openEditReminderModal;
         window.saveNewReminder = saveNewReminder;
         window.confirmDeleteReminder = confirmDeleteReminder;
         window.openAddLinkModal = openAddLinkModal;
@@ -1413,6 +1408,92 @@
         window.saveNewPasscode = saveNewPasscode;
         window.closeModal = closeModal;
         window.handleConfirmYes = handleConfirmYes;
+        window.previewUrlThumbnail = previewUrlThumbnail;
+        window.previewLinkCard = previewLinkCard;
+
+        // Initialize Firebase listeners and render initial views
+        async function initApp() {
+            const datePicker = document.getElementById('handbook-date-picker');
+            if (datePicker) {
+                datePicker.value = defaultDate;
+            }
+
+            // Initial render with default data
+            renderHandbook();
+            renderNotices();
+            renderReminders();
+            renderLinks();
+
+            try {
+                await signInAnonymously(auth);
+                isCloudConnected = true;
+
+                const handleSnapshotError = (err) => {
+                    console.warn("Cloud connection limited by Firestore Rules:", err);
+                    isCloudConnected = false;
+                    updateSyncStatus(false, "單機展示模式 (無雲端權限)");
+                };
+
+                // Sync Handbooks
+                onSnapshot(handbooksCollRef, (snapshot) => {
+                    snapshot.forEach(docSnap => {
+                        state.handbooks[docSnap.id] = docSnap.data();
+                    });
+                    renderHandbook();
+                    updateSyncStatus(true);
+                }, handleSnapshotError);
+
+                // Sync Notices
+                onSnapshot(noticesCollRef, (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(docSnap => {
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    if (list.length > 0) {
+                        state.notices = list;
+                        renderNotices();
+                    }
+                }, handleSnapshotError);
+
+                // Sync Reminders
+                onSnapshot(remindersCollRef, (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(docSnap => {
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    if (list.length > 0) {
+                        state.reminders = list;
+                        renderReminders();
+                    }
+                }, handleSnapshotError);
+
+                // Sync Links
+                onSnapshot(linksCollRef, (snapshot) => {
+                    const list = [];
+                    snapshot.forEach(docSnap => {
+                        list.push({ id: docSnap.id, ...docSnap.data() });
+                    });
+                    if (list.length > 0) {
+                        state.links = list;
+                        renderLinks();
+                    }
+                }, handleSnapshotError);
+
+                // Sync Passcode Config
+                onSnapshot(configDocRef, (docSnap) => {
+                    if (docSnap.exists() && docSnap.data() && docSnap.data().passcode) {
+                        state.adminPasscode = String(docSnap.data().passcode);
+                    }
+                }, handleSnapshotError);
+
+            } catch (err) {
+                console.warn("Cloud connection fallback mode active:", err);
+                isCloudConnected = false;
+                updateSyncStatus(false, "單機展示模式 (無雲端權限)");
+            }
+        }
+
+        initApp();
     </script>
 </body>
 </html>
