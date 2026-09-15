@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>一年六班 親師聯繫布告欄</title>
     
@@ -570,6 +569,7 @@ auth.onAuthStateChanged((user) => {
     if (adminPanel) adminPanel.style.display = 'none';
   }
 });
+// Firebase 雲端資料庫設定
 const firebaseConfig = {
   apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
   authDomain: "class106-board.firebaseapp.com",
@@ -578,6 +578,14 @@ const firebaseConfig = {
   messagingSenderId: "34565883734",
   appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
 };
+
+// 1. 初始化 Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+// 2. 初始化 Firestore 資料庫
+const db = firebase.firestore();
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
