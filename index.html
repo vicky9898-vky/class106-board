@@ -542,6 +542,34 @@
         import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Configuration
+        // 初始化 Auth 服務
+const auth = firebase.auth();
+
+// 老師登入函式（供管理介面呼叫）
+function teacherLogin(email, password) {
+  auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+      alert("登入成功！現在您可以發布與修改公告。");
+    })
+    .catch((error) => {
+      alert("登入失敗：" + error.message);
+    });
+}
+
+// 登出函式
+function teacherLogout() {
+  auth.signOut().then(() => alert("已成功登出！"));
+}
+
+// 監聽登入狀態以切換 UI 權限
+auth.onAuthStateChanged((user) => {
+  const adminPanel = document.getElementById('admin-panel'); // 假設您的管理面板 ID 為 admin-panel
+  if (user) {
+    if (adminPanel) adminPanel.style.display = 'block';
+  } else {
+    if (adminPanel) adminPanel.style.display = 'none';
+  }
+});
 const firebaseConfig = {
   apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
   authDomain: "class106-board.firebaseapp.com",
