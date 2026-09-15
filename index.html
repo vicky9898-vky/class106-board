@@ -444,11 +444,10 @@
             const date = new Date(dateStr);
             const dayOfWeek = date.getDay(); 
             let codeText = "";
-            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "明日穿著「運動服」 (週一、週四需求)";
-            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "明日穿著「制服」 (週二、週五需求)";
-            else if (dayOfWeek === 3) codeText = "明日穿著「便服」 (週三需求)";
-            else if (dayOfWeek === 6) codeText = "明日為假日，在家放鬆免穿制服！";
-            else codeText = "明日穿著「運動服」";
+            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "今日穿著「運動服」 (週一、週四需求)";
+            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "今日穿著「制服」 (週二、週五需求)";
+            else if (dayOfWeek === 3) codeText = "今日穿著「便服」 (週三需求)";
+            else if (dayOfWeek === 6 || dayOfWeek === 7) codeText = "今日為假日，在家放鬆免穿制服！";
 
             document.getElementById('dressCodeText').innerText = codeText;
         }
