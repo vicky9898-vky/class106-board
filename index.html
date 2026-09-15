@@ -542,15 +542,14 @@
         import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // Firebase Configuration
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'class-106-board';
-       const firebaseConfig = {
-    apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
-    authDomain: "class106-board.firebaseapp.com",
-    projectId: "class106-board",
-    storageBucket: "class106-board.firebasestorage.app",
-    messagingSenderId: "34565883734",
-    appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
+  authDomain: "class106-board.firebaseapp.com",
+  projectId: "class106-board",
+  storageBucket: "class106-board.firebasestorage.app",
+  messagingSenderId: "34565883734",
+  appId: "1:34565883734:web:d9b7c31e6c39fb5a95b8f7"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
