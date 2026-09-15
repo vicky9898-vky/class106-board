@@ -594,12 +594,6 @@ const db = firebase.firestore();
         let isCloudConnected = false;
 
         // Firestore Public Paths
-        const handbooksCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'handbooks');
-        const noticesCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'notices');
-        const remindersCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'reminders');
-        const linksCollRef = collection(db, 'artifacts', appId, 'public', 'data', 'links');
-        const configDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'config');
-
         const defaultDate = new Date().toISOString().split('T')[0];
 
         // Application State
