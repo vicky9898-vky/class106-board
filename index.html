@@ -18,297 +18,326 @@
 
     <style>
         body {
-            background-color: #fdfbf7;
+            /* 可愛點點背景 */
+            background-color: #fdf5f7;
+            background-image: radial-gradient(#f9a8d4 1.2px, transparent 1.2px);
+            background-size: 20px 20px;
             font-family: 'Zen Maru Gothic', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
         }
         .tab-btn {
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
-        .tab-btn.active {
+        .tab-btn.active-contact {
             background-color: #38bdf8;
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 15px -3px rgba(56, 189, 248, 0.3);
+            box-shadow: 0 10px 20px -5px rgba(56, 189, 248, 0.4);
         }
-        .bear-badge {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+        .tab-btn.active-announcement {
+            background-color: #fbbf24;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(251, 191, 36, 0.4);
+        }
+        .tab-btn.active-reminder {
+            background-color: #34d399;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(52, 211, 153, 0.4);
+        }
+        .tab-btn.active-website {
+            background-color: #c084fc;
+            color: white;
+            box-shadow: 0 10px 20px -5px rgba(192, 132, 252, 0.4);
         }
     </style>
 </head>
-<body class="min-h-screen pb-16 text-amber-950">
+<body class="min-h-screen pb-16 text-emerald-950">
 
     <!-- 頂部標題與登入區 -->
-    <header class="bg-amber-50/80 backdrop-blur-md sticky top-0 z-40 border-b border-amber-100 shadow-sm">
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-40 border-b border-pink-100 shadow-sm">
         <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
             <div class="flex items-center gap-3">
-                <span class="text-3xl animate-bounce">🧸</span>
+                <div class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl shadow-inner">🧸</div>
                 <div>
-                    <h1 class="text-2xl font-black text-amber-900 tracking-wide flex items-center gap-2">
-                        一年六班 親師聯絡布告欄
-                    </h1>
-                    <p class="text-xs text-amber-700/80 font-bold flex items-center gap-2 mt-0.5">
-                        <span>💬 有任何問題都可以詢問旻慧老師唷！</span>
-                        <span id="cloudStatus" class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">
-                            🟢 雲端同步中
-                        </span>
+                    <h1 class="text-xl font-black text-slate-800 tracking-wide">一年六班 親師聯絡布告欄</h1>
+                    <p class="text-xs text-slate-500 font-bold flex items-center gap-2">
+                        <span>💬 有任何問題歡迎詢問旻慧老師唷！</span>
+                        <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">🟢 雲端同步中</span>
                     </p>
                 </div>
             </div>
             
-            <button id="authBtn" onclick="toggleAuthModal()" class="bg-white text-amber-800 hover:bg-amber-100/60 border-2 border-amber-200 px-4 py-2 rounded-2xl text-sm font-bold flex items-center gap-2 transition shadow-sm">
+            <button id="authBtn" onclick="toggleAuthModal()" class="bg-white text-slate-700 hover:bg-slate-50 border-2 border-slate-200 px-4 py-1.5 rounded-2xl text-xs font-bold flex items-center gap-2 shadow-sm transition">
                 <i class="fa-solid fa-lock text-amber-500"></i> 教師管理登入
             </button>
         </div>
     </header>
 
     <main class="max-w-5xl mx-auto px-4 mt-6">
-        <!-- 分頁選單 -->
+        <!-- 分頁選單 (圖示完全參考圖片風格) -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-            <button onclick="switchCategory('contact')" id="btn-contact" class="tab-btn active p-4 rounded-3xl bg-white border-2 border-amber-100 text-left flex items-center gap-3 shadow-sm">
-                <div class="w-11 h-11 rounded-2xl bg-sky-100 text-sky-500 flex items-center justify-center text-xl font-bold">📖</div>
-                <div>
-                    <div class="text-[10px] text-amber-700/60 font-black">每日優先</div>
-                    <div class="font-bold text-amber-900">每日聯絡本</div>
+            <button onclick="switchCategory('contact')" id="btn-contact" class="tab-btn active-contact p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-sky-50 text-sky-500 flex items-center justify-center text-xl">📖</div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-bold">每日優先</div>
+                        <div class="font-black text-slate-800 text-sm">每日聯絡本</div>
+                    </div>
+                </div>
+                <span class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">NEW</span>
+            </button>
+
+            <button onclick="switchCategory('announcement')" id="btn-announcement" class="tab-btn p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-500 flex items-center justify-center text-xl">📣</div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-bold">校園動態</div>
+                        <div class="font-black text-slate-800 text-sm">校內公告</div>
+                    </div>
                 </div>
             </button>
 
-            <button onclick="switchCategory('announcement')" id="btn-announcement" class="tab-btn p-4 rounded-3xl bg-white border-2 border-amber-100 text-left flex items-center gap-3 shadow-sm">
-                <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-bold">📢</div>
-                <div>
-                    <div class="text-[10px] text-amber-700/60 font-black">校園動態</div>
-                    <div class="font-bold text-amber-900">校內公告</div>
+            <button onclick="switchCategory('reminder')" id="btn-reminder" class="tab-btn p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-xl">💡</div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-bold">溫馨叮嚀</div>
+                        <div class="font-black text-slate-800 text-sm">旻慧老師的小提醒</div>
+                    </div>
                 </div>
             </button>
 
-            <button onclick="switchCategory('reminder')" id="btn-reminder" class="tab-btn p-4 rounded-3xl bg-white border-2 border-amber-100 text-left flex items-center gap-3 shadow-sm">
-                <div class="w-11 h-11 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl font-bold">💌</div>
-                <div>
-                    <div class="text-[10px] text-amber-700/60 font-black">溫馨叮嚀</div>
-                    <div class="font-bold text-amber-900">老師小提醒</div>
+            <button onclick="switchCategory('website')" id="btn-website" class="tab-btn p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center text-xl">🌐</div>
+                    <div>
+                        <div class="text-[10px] text-slate-400 font-bold">自主學習</div>
+                        <div class="font-black text-slate-800 text-sm">學生常用網站</div>
+                    </div>
                 </div>
-            </button>
-
-            <button onclick="switchCategory('website')" id="btn-website" class="tab-btn p-4 rounded-3xl bg-white border-2 border-amber-100 text-left flex items-center gap-3 shadow-sm">
-                <div class="w-11 h-11 rounded-2xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl font-bold">🌐</div>
-                <div>
-                    <div class="text-[10px] text-amber-700/60 font-black">自主學習</div>
-                    <div class="font-bold text-amber-900">常用網站</div>
-                </div>
+                <span class="bg-rose-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-sm">NEW</span>
             </button>
         </div>
 
         <!-- 區塊1: 每日聯絡本 -->
-        <div id="sec-contact" class="tab-content bg-sky-400 rounded-[2.5rem] p-6 text-white shadow-xl mb-8 relative overflow-hidden">
-            <div class="absolute -right-6 -bottom-6 text-9xl opacity-20 pointer-events-none">🐾</div>
-            
+        <div id="sec-contact" class="tab-content bg-sky-400 rounded-[2.5rem] p-6 text-white shadow-lg mb-8 relative">
             <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
                 <div class="flex items-center gap-3">
-                    <span class="text-4xl">🐻</span>
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">📖</div>
                     <div>
-                        <h2 class="text-2xl font-black tracking-wide">一年六班 每日聯絡本</h2>
+                        <h2 class="text-2xl font-black">一年六班 每日聯絡本</h2>
                         <div class="flex items-center gap-2 mt-1">
-                            <span class="text-xs font-bold text-sky-100">📅 選擇日期：</span>
-                            <input type="date" id="contactDatePicker" onchange="loadContactByDate(this.value)" class="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full border border-white/40 focus:outline-none focus:bg-white focus:text-sky-900">
+                            <span class="text-xs font-bold text-sky-100">📅 日期選擇：</span>
+                            <input type="date" id="contactDatePicker" onchange="loadContactByDate(this.value)" class="bg-white/20 text-white font-bold text-xs px-3 py-1 rounded-full border border-white/30 focus:outline-none">
                         </div>
                     </div>
                 </div>
-                <button onclick="openContactModal()" class="admin-only hidden bg-amber-300 hover:bg-amber-400 text-amber-950 font-black px-5 py-2.5 rounded-2xl text-sm transition shadow-md flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> 更新本日聯絡本
+                <button onclick="openContactModal()" class="admin-only hidden bg-amber-300 hover:bg-amber-400 text-amber-950 font-black px-4 py-2 rounded-2xl text-xs shadow-md">
+                    ✏️ 更新本日聯絡本
                 </button>
             </div>
 
-            <div class="bg-white rounded-3xl p-6 text-gray-800 space-y-6 shadow-inner">
+            <div class="bg-white rounded-[2rem] p-6 text-slate-700 space-y-5 shadow-inner">
                 <div>
-                    <h3 class="font-black text-sky-600 flex items-center gap-2 mb-2 text-lg">
-                        <i class="fa-solid fa-pencil text-sky-400"></i> 今日功課作業
+                    <h3 class="font-black text-sky-600 flex items-center gap-2 mb-2 text-base">
+                        <i class="fa-solid fa-pencil"></i> 今日功課作業
                     </h3>
-                    <div id="homeworkContent" class="text-gray-700 font-medium whitespace-pre-line leading-relaxed pl-6">載入中...</div>
+                    <div id="homeworkContent" class="font-bold text-slate-700 whitespace-pre-line leading-relaxed pl-4">載入中...</div>
                 </div>
 
                 <div id="sec-bring-box">
-                    <hr class="border-sky-100 mb-6">
-                    <h3 class="font-black text-amber-600 flex items-center gap-2 mb-2 text-lg">
-                        <i class="fa-solid fa-bag-shopping text-amber-400"></i> 明日需帶物品
+                    <hr class="border-sky-100 mb-4">
+                    <h3 class="font-black text-amber-500 flex items-center gap-2 mb-2 text-base">
+                        <i class="fa-solid fa-bag-shopping"></i> 明日需帶物品
                     </h3>
-                    <div id="bringContent" class="text-gray-700 font-medium whitespace-pre-line leading-relaxed pl-6">尚無帶物品提醒。</div>
+                    <div id="bringContent" class="font-bold text-slate-700 whitespace-pre-line leading-relaxed pl-4">尚無提醒。</div>
                 </div>
 
                 <div id="sec-note-box">
-                    <hr class="border-sky-100 mb-6">
-                    <h3 class="font-black text-emerald-600 flex items-center gap-2 mb-2 text-lg">
-                        <i class="fa-solid fa-heart text-emerald-400"></i> 今日老師叮嚀
+                    <hr class="border-sky-100 mb-4">
+                    <h3 class="font-black text-emerald-500 flex items-center gap-2 mb-2 text-base">
+                        <i class="fa-solid fa-heart"></i> 今日老師叮嚀
                     </h3>
-                    <div id="teacherNoteContent" class="text-gray-700 font-medium whitespace-pre-line leading-relaxed pl-6">大家今天表現都很棒！</div>
+                    <div id="teacherNoteContent" class="font-bold text-slate-700 whitespace-pre-line leading-relaxed pl-4">大家今天表現都很棒！</div>
                 </div>
             </div>
         </div>
 
-        <!-- 區塊2: 校內公告 (四處室) -->
-        <div id="sec-announcement" class="tab-content hidden bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-amber-100/80 mb-8">
+        <!-- 區塊2: 校內公告 (黃色系可愛外盒) -->
+        <div id="sec-announcement" class="tab-content hidden bg-amber-400 rounded-[2.5rem] p-6 text-white shadow-lg mb-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black text-amber-900 flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-amber-500"></i> 校內重要公告
-                </h2>
-                <button onclick="openNoticeModal('announcement')" class="admin-only hidden bg-amber-400 hover:bg-amber-500 text-amber-950 font-black px-4 py-2 rounded-2xl text-sm transition shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> 發布新公告
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">📣</div>
+                    <div>
+                        <h2 class="text-2xl font-black">校內重要公告</h2>
+                        <p class="text-xs text-amber-100 font-bold">處室重要通知與校園訊息</p>
+                    </div>
+                </div>
+                <button onclick="openNoticeModal('announcement')" class="admin-only hidden bg-white text-amber-900 font-black px-4 py-2 rounded-2xl text-xs shadow-md hover:bg-amber-50">
+                    ➕ 發布新公告
                 </button>
             </div>
-            <div id="announcementList" class="space-y-4">
-                <p class="text-gray-400 text-sm">載入公告中...</p>
-            </div>
+            <div id="announcementList" class="space-y-4"></div>
         </div>
 
-        <!-- 區塊3: 老師的小提醒 -->
-        <div id="sec-reminder" class="tab-content hidden bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-amber-100/80 mb-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black text-amber-900 flex items-center gap-2">
-                    <i class="fa-solid fa-envelope-open-text text-emerald-500"></i> 旻慧老師的小提醒
-                </h2>
-                <button onclick="openNoticeModal('reminder')" class="admin-only hidden bg-emerald-400 hover:bg-emerald-500 text-white font-black px-4 py-2 rounded-2xl text-sm transition shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> 新增提醒
+        <!-- 區塊3: 旻慧老師的小提醒 (還原圖片中鮮明薄荷綠風格) -->
+        <div id="sec-reminder" class="tab-content hidden bg-[#52d6a4] rounded-[2.5rem] p-6 text-white shadow-lg mb-8">
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-white/30">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm">💡</div>
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">旻慧老師的小提醒</h2>
+                        <p class="text-xs text-emerald-900 font-bold opacity-80">導師的生活叮嚀與即時通知</p>
+                    </div>
+                </div>
+                <button onclick="openNoticeModal('reminder')" class="admin-only hidden bg-white text-emerald-800 font-black px-4 py-2 rounded-2xl text-xs shadow-md hover:bg-emerald-50">
+                    ➕ 新增小提醒
                 </button>
             </div>
-            <div id="reminderList" class="space-y-4">
-                <p class="text-gray-400 text-sm">載入提醒中...</p>
-            </div>
+            <div id="reminderList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
-        <!-- 區塊4: 學生常用網站 -->
-        <div id="sec-website" class="tab-content hidden bg-white rounded-[2.5rem] p-6 shadow-sm border-2 border-amber-100/80 mb-8">
+        <!-- 區塊4: 學生常用網站 (紫色系可愛外盒) -->
+        <div id="sec-website" class="tab-content hidden bg-purple-400 rounded-[2.5rem] p-6 text-white shadow-lg mb-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-xl font-black text-amber-900 flex items-center gap-2">
-                    <i class="fa-solid fa-compass text-purple-500"></i> 學生常用學習網站
-                </h2>
-                <button onclick="openWebsiteModal()" class="admin-only hidden bg-purple-500 hover:bg-purple-600 text-white font-black px-4 py-2 rounded-2xl text-sm transition shadow-sm flex items-center gap-2">
-                    <i class="fa-solid fa-plus"></i> 新增推薦網站
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">🌐</div>
+                    <div>
+                        <h2 class="text-2xl font-black">學生常用學習網站</h2>
+                        <p class="text-xs text-purple-100 font-bold">課後學習與自主探索平台</p>
+                    </div>
+                </div>
+                <button onclick="openWebsiteModal()" class="admin-only hidden bg-white text-purple-900 font-black px-4 py-2 rounded-2xl text-xs shadow-md hover:bg-purple-50">
+                    ➕ 新增常用網站
                 </button>
             </div>
-            <div id="websiteList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <p class="text-gray-400 text-sm col-span-2">載入常用網站中...</p>
-            </div>
+            <div id="websiteList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
     </main>
 
     <!-- Modal 1: 教師登入彈窗 -->
-    <div id="authModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div id="authModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border-4 border-amber-100">
-            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-amber-800">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            <h3 class="text-xl font-black text-amber-900 mb-4 flex items-center gap-2">
-                <span>🐻</span> 教師管理員登入
-            </h3>
+            <button onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-xl font-black text-slate-800 mb-4 flex items-center gap-2">🧸 教師管理員登入</h3>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">Email 帳號</label>
-                    <input type="email" id="loginEmail" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">Email 帳號</label>
+                    <input type="email" id="loginEmail" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">登入密碼</label>
-                    <input type="password" id="loginPassword" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">登入密碼</label>
+                    <input type="password" id="loginPassword" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-amber-400">
                 </div>
-                <button onclick="loginTeacher()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl transition shadow">
-                    確認登入
-                </button>
+                <button onclick="loginTeacher()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl transition shadow">確認登入</button>
             </div>
         </div>
     </div>
 
     <!-- Modal 2: 編輯聯絡本彈窗 -->
-    <div id="contactModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div id="contactModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-sky-100 max-h-[90vh] overflow-y-auto">
-            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <button onclick="closeContactModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
             <h3 class="text-xl font-black text-sky-900 mb-4">📝 更新每日聯絡本</h3>
-            
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">選擇套用日期</label>
-                    <input type="date" id="modalContactDate" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">選擇套用日期</label>
+                    <input type="date" id="modalContactDate" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-sky-700 mb-1">今日功課作業</label>
-                    <textarea id="modalHomework" rows="3" class="w-full border-2 border-sky-100 rounded-xl p-2 text-sm" placeholder="1. 國語第一課單字&#10;2. 算數練習本 P.4"></textarea>
+                    <textarea id="modalHomework" rows="3" class="w-full border-2 border-sky-100 rounded-xl p-2 text-sm" placeholder="1. 國語第一課單字"></textarea>
                 </div>
-                
                 <div class="border-t pt-3">
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-xs font-bold text-amber-700">明日帶物品</label>
-                        <label class="text-xs text-gray-500"><input type="checkbox" id="showBringCheck" checked> 顯示此區塊</label>
+                        <label class="text-xs text-slate-500"><input type="checkbox" id="showBringCheck" checked> 顯示此區塊</label>
                     </div>
-                    <textarea id="modalBring" rows="2" class="w-full border-2 border-amber-100 rounded-xl p-2 text-sm" placeholder="抹布、色鉛筆"></textarea>
+                    <textarea id="modalBring" rows="2" class="w-full border-2 border-amber-100 rounded-xl p-2 text-sm"></textarea>
                 </div>
-
                 <div class="border-t pt-3">
                     <div class="flex items-center justify-between mb-1">
                         <label class="text-xs font-bold text-emerald-700">今日老師叮嚀</label>
-                        <label class="text-xs text-gray-500"><input type="checkbox" id="showNoteCheck" checked> 顯示此區塊</label>
+                        <label class="text-xs text-slate-500"><input type="checkbox" id="showNoteCheck" checked> 顯示此區塊</label>
                     </div>
-                    <textarea id="modalNote" rows="2" class="w-full border-2 border-emerald-100 rounded-xl p-2 text-sm" placeholder="天氣轉冷，請記得帶外套！"></textarea>
+                    <textarea id="modalNote" rows="2" class="w-full border-2 border-emerald-100 rounded-xl p-2 text-sm"></textarea>
                 </div>
-
-                <button onclick="saveContact()" class="w-full bg-sky-400 hover:bg-sky-500 text-white font-black py-2.5 rounded-xl shadow">儲存並同步至雲端</button>
+                <button onclick="saveContact()" class="w-full bg-sky-400 text-white font-black py-2.5 rounded-xl shadow">儲存並同步至雲端</button>
             </div>
         </div>
     </div>
 
-    <!-- Modal 3: 新增/編輯公告與提醒彈窗 (四處室) -->
-    <div id="noticeModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-amber-100 max-h-[90vh] overflow-y-auto">
-            <button onclick="closeNoticeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <h3 id="noticeModalTitle" class="text-xl font-black text-amber-900 mb-4">📢 發布公告</h3>
+    <!-- Modal 3: 新增/編輯公告與提醒彈窗 (可自訂可愛小圖示) -->
+    <div id="noticeModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-emerald-100 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeNoticeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 id="noticeModalTitle" class="text-xl font-black text-slate-800 mb-4">📢 發布項目</h3>
             
             <div class="space-y-4">
                 <input type="hidden" id="noticeDocId">
                 <input type="hidden" id="noticeType">
                 
                 <div id="deptSelectBox">
-                    <label class="block text-xs font-bold text-amber-800 mb-1">發布處室</label>
-                    <select id="noticeDept" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm font-bold">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">發布處室</label>
+                    <select id="noticeDept" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
                         <option value="教務處">教務處</option>
                         <option value="學務處">學務處</option>
                         <option value="輔導室">輔導室</option>
                         <option value="總務處">總務處</option>
                     </select>
                 </div>
+
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">標題</label>
-                    <input type="text" id="noticeTitle" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🎨 選擇可愛卡片小圖示 Emoji</label>
+                    <select id="noticeIcon" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
+                        <option value="👟">👟 服裝體育服</option>
+                        <option value="🎒">🎒 帶書包物品</option>
+                        <option value="🍱">🍱 午餐與餐盒</option>
+                        <option value="📚">📚 課照與閱讀</option>
+                        <option value="💊">💊 托藥與請假</option>
+                        <option value="🎉">🎉 校園與班級活動</option>
+                        <option value="⚠️">⚠️ 安全與注意事項</option>
+                        <option value="📢">📢 一般廣播</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">標題</label>
+                    <input type="text" id="noticeTitle" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold" placeholder="例如：明日穿著體育服">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">詳細內容</label>
-                    <textarea id="noticeContent" rows="3" class="w-full border-2 border-amber-100 rounded-xl p-2 text-sm"></textarea>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">詳細內容</label>
+                    <textarea id="noticeContent" rows="3" class="w-full border-2 border-slate-100 rounded-xl p-2 text-sm" placeholder="明日星期三有體育課..."></textarea>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">🖼️ 附加圖片網址 (選填)</label>
-                    <input type="url" id="noticeImgUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://...">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🖼️ 附加圖片網址 (選填)</label>
+                    <input type="url" id="noticeImgUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-amber-800 mb-1">🔗 附加預覽網址 (選填)</label>
-                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-amber-100 rounded-xl px-3 py-2 text-sm" placeholder="https://...">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🔗 附加網址 (選填)</label>
+                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
-                <button onclick="saveNotice()" class="w-full bg-amber-400 hover:bg-amber-500 text-amber-950 font-black py-2.5 rounded-xl shadow">確認儲存發布</button>
+                <button onclick="saveNotice()" class="w-full bg-emerald-400 text-white font-black py-2.5 rounded-xl shadow">確認儲存發布</button>
             </div>
         </div>
     </div>
 
     <!-- Modal 4: 新增/編輯常用網站彈窗 -->
-    <div id="websiteModal" class="fixed inset-0 bg-amber-950/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div id="websiteModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl relative border-4 border-purple-100">
-            <button onclick="closeWebsiteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <button onclick="closeWebsiteModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
             <h3 id="webModalTitle" class="text-xl font-black text-purple-900 mb-4">🌐 新增常用網站</h3>
             <div class="space-y-4">
                 <input type="hidden" id="webDocId">
                 <div>
-                    <label class="block text-xs font-bold text-purple-800 mb-1">網站名稱</label>
-                    <input type="text" id="webName" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">網站名稱</label>
+                    <input type="text" id="webName" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-purple-800 mb-1">網站網址 (URL)</label>
-                    <input type="url" id="webUrl" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">網站網址 (URL)</label>
+                    <input type="url" id="webUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-purple-800 mb-1">選擇圖示 Emoji</label>
-                    <select id="webIcon" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">選擇圖示 Emoji</label>
+                    <select id="webIcon" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
                         <option value="📺">📺 影音頻道</option>
                         <option value="📚">📚 線上閱讀</option>
                         <option value="🎨">🎨 藝術繪畫</option>
@@ -317,17 +346,17 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-purple-800 mb-1">小備註說明功能</label>
-                    <input type="text" id="webNote" class="w-full border-2 border-purple-100 rounded-xl px-3 py-2 text-sm">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">說明文字</label>
+                    <input type="text" id="webNote" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm">
                 </div>
-                <button onclick="saveWebsite()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-2.5 rounded-xl shadow">儲存網站資訊</button>
+                <button onclick="saveWebsite()" class="w-full bg-purple-500 text-white font-black py-2.5 rounded-xl shadow">儲存網站資訊</button>
             </div>
         </div>
     </div>
 
     <!-- 腳本邏輯區塊 -->
     <script>
-        // 1. Firebase 初始化
+        // Firebase 初始化
         const firebaseConfig = {
             apiKey: "AIzaSyDvKdDqBex0WtxoboU0Ml-VvGVs5eggFFA",
             authDomain: "class106-board.firebaseapp.com",
@@ -345,17 +374,17 @@
         document.getElementById('contactDatePicker').value = getTodayStr();
 
         function switchCategory(cat) {
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.className = 'tab-btn p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm');
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
 
             const targetBtn = document.getElementById(`btn-${cat}`);
             const targetSec = document.getElementById(`sec-${cat}`);
 
-            if (targetBtn) targetBtn.classList.add('active');
+            if (targetBtn) targetBtn.classList.add(`active-${cat}`);
             if (targetSec) targetSec.classList.remove('hidden');
         }
 
-        // Auth 登入控制
+        // Auth 權限管理
         function toggleAuthModal() {
             if (auth.currentUser) {
                 if (confirm("確定要登出教師管理身分嗎？")) auth.signOut();
@@ -369,7 +398,7 @@
             const password = document.getElementById('loginPassword').value;
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
-                    alert("登入成功！");
+                    alert("登入成功！已開啟編輯權限");
                     document.getElementById('authModal').classList.add('hidden');
                 })
                 .catch(err => alert("登入失敗：" + err.message));
@@ -387,7 +416,7 @@
             }
         });
 
-        // 每日聯絡本邏輯
+        // 每日聯絡本
         function loadContactByDate(dateStr) {
             db.collection('contact_history').doc(dateStr).get().then(doc => {
                 if (doc.exists) {
@@ -450,25 +479,26 @@
             });
         }
 
-        // 公告與提醒管理 (新增/編輯/刪除)
+        // 公告與提醒 (支援圖片風格排版 + 小圖示)
         function openNoticeModal(type, docId = null) {
             document.getElementById('noticeDocId').value = docId || '';
             document.getElementById('noticeType').value = type;
             document.getElementById('deptSelectBox').style.display = type === 'announcement' ? 'block' : 'none';
             
             if (docId) {
-                document.getElementById('noticeModalTitle').innerText = '✏️ 編輯項目';
+                document.getElementById('noticeModalTitle').innerText = '✏️ 編輯卡片項目';
                 const collection = type === 'announcement' ? 'announcements' : 'reminders';
                 db.collection(collection).doc(docId).get().then(doc => {
                     const d = doc.data();
                     if (type === 'announcement') document.getElementById('noticeDept').value = d.dept || '教務處';
+                    document.getElementById('noticeIcon').value = d.icon || '👟';
                     document.getElementById('noticeTitle').value = d.title || '';
                     document.getElementById('noticeContent').value = d.content || '';
                     document.getElementById('noticeImgUrl').value = d.imgUrl || '';
                     document.getElementById('noticeLinkUrl').value = d.linkUrl || '';
                 });
             } else {
-                document.getElementById('noticeModalTitle').innerText = type === 'announcement' ? '📢 發布校內公告' : '💌 新增老師小提醒';
+                document.getElementById('noticeModalTitle').innerText = type === 'announcement' ? '📢 發布校內公告' : '💡 新增老師小提醒';
                 document.getElementById('noticeTitle').value = '';
                 document.getElementById('noticeContent').value = '';
                 document.getElementById('noticeImgUrl').value = '';
@@ -485,10 +515,12 @@
             
             const payload = {
                 dept: type === 'announcement' ? document.getElementById('noticeDept').value : '老師提醒',
+                icon: document.getElementById('noticeIcon').value,
                 title: document.getElementById('noticeTitle').value,
                 content: document.getElementById('noticeContent').value,
                 imgUrl: document.getElementById('noticeImgUrl').value,
                 linkUrl: document.getElementById('noticeLinkUrl').value,
+                dateStr: getTodayStr(),
                 updatedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -507,64 +539,83 @@
         }
 
         function deleteItem(collection, docId) {
-            if (confirm("確定要刪除這筆資料嗎？刪除後無法復原喔！")) {
+            if (confirm("確定要刪除這筆卡片嗎？")) {
                 db.collection(collection).doc(docId).delete().then(() => alert("已成功刪除！"));
             }
         }
 
-        // 監聽公告列表 (包含後台管理按鈕)
+        // 監聽校內公告
         db.collection('announcements').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('announcementList');
-            if (snapshot.empty) { list.innerHTML = '<p class="text-gray-400 text-sm">目前無公告。</p>'; return; }
+            if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm">目前無公告。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
                 const id = doc.id;
                 html += `
-                    <div class="p-5 rounded-3xl border-2 border-amber-100 bg-amber-50/30 hover:shadow-md transition relative">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="bear-badge text-amber-900 font-black text-xs px-3 py-1 rounded-full shadow-sm">${d.dept || '教務處'}</span>
-                            <div class="admin-only hidden space-x-2">
-                                <button onclick="openNoticeModal('announcement', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg hover:bg-sky-200">✏️ 編輯</button>
-                                <button onclick="deleteItem('announcements', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200">🗑️ 刪除</button>
+                    <div class="bg-white rounded-[2rem] p-5 text-slate-800 shadow-md relative hover:shadow-lg transition">
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center gap-2">
+                                <span class="text-2xl">${d.icon || '📢'}</span>
+                                <span class="bg-amber-100 text-amber-900 font-black text-xs px-3 py-1 rounded-full">${d.dept || '教務處'}</span>
+                                <h3 class="font-black text-slate-800 text-lg">${d.title}</h3>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="bg-rose-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm">NEW!</span>
+                                <div class="admin-only hidden space-x-1">
+                                    <button onclick="openNoticeModal('announcement', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️</button>
+                                    <button onclick="deleteItem('announcements', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️</button>
+                                </div>
                             </div>
                         </div>
-                        <h3 class="font-black text-amber-950 text-base mb-1">${d.title}</h3>
-                        <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed mb-3">${d.content}</p>
-                        ${d.imgUrl ? `<img src="${d.imgUrl}" class="max-h-56 rounded-2xl mb-3 border border-amber-200 object-cover" alt="公告圖片">` : ''}
-                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 bg-sky-50 px-3 py-1.5 rounded-xl border border-sky-200 hover:bg-sky-100"><i class="fa-solid fa-link"></i> 開啟預覽網址</a>` : ''}
+                        <p class="text-sm text-slate-600 font-bold whitespace-pre-line leading-relaxed mb-4 pl-8">${d.content}</p>
+                        ${d.imgUrl ? `<img src="${d.imgUrl}" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover" alt="公告圖片">` : ''}
+                        <div class="flex justify-between items-center text-xs text-slate-400 font-bold pt-2 border-t border-slate-100">
+                            <span>提醒時間：${d.dateStr || getTodayStr()}</span>
+                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-sky-600 underline font-bold">🔗 點擊開啟連結</a>` : ''}
+                        </div>
                     </div>
                 `;
             });
             list.innerHTML = html;
         });
 
-        // 監聽提醒列表 (包含後台管理按鈕)
+        // 監聽旻慧老師的小提醒 (圖片精緻卡片風格)
         db.collection('reminders').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('reminderList');
-            if (snapshot.empty) { list.innerHTML = '<p class="text-gray-400 text-sm">目前無提醒。</p>'; return; }
+            if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm col-span-2">目前無提醒。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
                 const id = doc.id;
                 html += `
-                    <div class="p-5 rounded-3xl border-2 border-emerald-100 bg-emerald-50/20 hover:shadow-md transition relative">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-black text-emerald-950 text-base">💌 ${d.title}</h3>
-                            <div class="admin-only hidden space-x-2">
-                                <button onclick="openNoticeModal('reminder', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg hover:bg-sky-200">✏️ 編輯</button>
-                                <button onclick="deleteItem('reminders', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg hover:bg-rose-200">🗑️ 刪除</button>
+                    <div class="bg-white rounded-[2rem] p-6 text-slate-800 shadow-md flex flex-col justify-between relative hover:shadow-lg transition">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-2xl">${d.icon || '👟'}</span>
+                                    <h3 class="font-black text-slate-800 text-lg tracking-wide">${d.title}</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-rose-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">NEW!</span>
+                                    <div class="admin-only hidden space-x-1">
+                                        <button onclick="openNoticeModal('reminder', '${id}')" class="text-xs bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️</button>
+                                        <button onclick="deleteItem('reminders', '${id}')" class="text-xs bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️</button>
+                                    </div>
+                                </div>
                             </div>
+                            <p class="text-sm font-bold text-slate-600 whitespace-pre-line leading-relaxed mb-4 pl-1">${d.content}</p>
                         </div>
-                        <p class="text-sm text-gray-700 whitespace-pre-line leading-relaxed mb-2">${d.content}</p>
-                        ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-xs font-bold text-emerald-600 underline">開啟預覽網址</a>` : ''}
+                        <div class="text-right text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
+                            提醒時間：${d.dateStr || getTodayStr()}
+                        </div>
                     </div>
                 `;
             });
             list.innerHTML = html;
         });
 
-        // 常用網站管理 (新增/編輯/刪除)
+        // 監聽學生常用網站
         function openWebsiteModal(docId = null) {
             document.getElementById('webDocId').value = docId || '';
             if (docId) {
@@ -612,23 +663,23 @@
 
         db.collection('websites').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('websiteList');
-            if (snapshot.empty) { list.innerHTML = '<p class="text-gray-400 text-sm col-span-2">尚無自訂推薦網站。</p>'; return; }
+            if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm col-span-2">尚無網站。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
                 const id = doc.id;
                 html += `
-                    <div class="p-4 rounded-3xl border-2 border-purple-100 bg-purple-50/20 flex items-center justify-between gap-4 relative hover:shadow-md transition">
+                    <div class="bg-white rounded-[2rem] p-4 flex items-center justify-between gap-4 shadow-md hover:shadow-lg transition">
                         <a href="${d.url}" target="_blank" class="flex items-center gap-4 flex-1">
-                            <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-2xl border border-purple-100 flex-shrink-0">${d.icon || '🌐'}</div>
+                            <div class="w-12 h-12 rounded-2xl bg-purple-50 flex items-center justify-center text-2xl flex-shrink-0">${d.icon || '🌐'}</div>
                             <div>
-                                <div class="font-black text-purple-950 text-sm">${d.name}</div>
-                                <div class="text-xs text-gray-500 font-medium mt-0.5">${d.note || '點擊前往網頁'}</div>
+                                <div class="font-black text-slate-800 text-sm">${d.name}</div>
+                                <div class="text-xs text-slate-400 font-bold mt-0.5">${d.note || '點擊前往網頁'}</div>
                             </div>
                         </a>
                         <div class="admin-only hidden flex flex-col gap-1">
-                            <button onclick="openWebsiteModal('${id}')" class="text-[10px] bg-sky-100 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️ 編輯</button>
-                            <button onclick="deleteItem('websites', '${id}')" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️ 刪除</button>
+                            <button onclick="openWebsiteModal('${id}')" class="text-[10px] bg-sky-100 text-sky-700 font-bold px-2 py-0.5 rounded-lg">✏️</button>
+                            <button onclick="deleteItem('websites', '${id}')" class="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-lg">🗑️</button>
                         </div>
                     </div>
                 `;
