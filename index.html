@@ -171,7 +171,7 @@
             </div>
         </div>
 
-        <!-- 區塊2: 校內公告 (已改為與教師提醒一樣的雙欄卡片排版) -->
+        <!-- 區塊2: 校內公告 -->
         <div id="sec-announcement" class="tab-content hidden bg-amber-400 rounded-[2.5rem] p-6 text-white shadow-lg mb-8">
             <div class="flex justify-between items-center mb-4 pb-4 border-b border-white/30">
                 <div class="flex items-center gap-3">
@@ -275,7 +275,7 @@
         </div>
     </div>
 
-    <!-- Modal 2: 發布/編輯公告彈窗 (包含檔案上傳) -->
+    <!-- Modal 2: 發布/編輯公告彈窗 -->
     <div id="noticeModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl relative border-4 border-emerald-100 max-h-[90vh] overflow-y-auto">
             <button onclick="closeNoticeModal()" class="absolute top-4 right-4 text-slate-400"><i class="fa-solid fa-xmark text-xl"></i></button>
@@ -429,7 +429,7 @@
         // 初始載入當日
         document.getElementById('contactDatePicker').value = getTodayStr();
 
-        // 💡 自動跨日（00:00）計時器邏輯
+        // 自動跨日（00:00）計時器邏輯
         function scheduleMidnightRefresh() {
             const now = new Date();
             const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
@@ -439,7 +439,7 @@
                 const todayStr = getTodayStr();
                 document.getElementById('contactDatePicker').value = todayStr;
                 loadContactByDate(todayStr);
-                scheduleMidnightRefresh(); // 循環註冊下一個午夜
+                scheduleMidnightRefresh();
             }, timeUntilMidnight);
         }
         scheduleMidnightRefresh();
@@ -642,7 +642,7 @@
             }
         }
 
-        // 監聽校內公告 (已對齊教師提醒的雙欄樣式與佈局)
+        // 監聽校內公告 (連結處改為滿版高亮按鈕)
         db.collection('announcements').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('announcementList');
             if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm col-span-2">目前無公告。</p>'; return; }
@@ -669,10 +669,16 @@
                             </div>
                             <p class="text-sm font-bold text-slate-600 whitespace-pre-line leading-relaxed mb-4 pl-1">${d.content}</p>
                             ${d.imgUrl ? `<img src="${d.imgUrl}" onclick="viewImage('${d.imgUrl}')" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover w-full cursor-pointer hover:opacity-90 transition" alt="公告圖片 (點擊放大)">` : ''}
+                            ${d.linkUrl ? `
+                                <div class="mb-4">
+                                    <a href="${d.linkUrl}" target="_blank" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-black py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 text-sm transition transform active:scale-95">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 點擊開啟外部連結
+                                    </a>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
                             <span>提醒時間：${d.dateStr || getTodayStr()}</span>
-                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-amber-600 hover:text-amber-800 underline font-black flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 點擊開啟連結</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -680,7 +686,7 @@
             list.innerHTML = html;
         });
 
-        // 監聽旻慧老師的小提醒
+        // 監聽旻慧老師的小提醒 (連結處改為滿版高亮按鈕)
         db.collection('reminders').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('reminderList');
             if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm col-span-2">目前無提醒。</p>'; return; }
@@ -706,10 +712,16 @@
                             </div>
                             <p class="text-sm font-bold text-slate-600 whitespace-pre-line leading-relaxed mb-4 pl-1">${d.content}</p>
                             ${d.imgUrl ? `<img src="${d.imgUrl}" onclick="viewImage('${d.imgUrl}')" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover w-full cursor-pointer hover:opacity-90 transition" alt="提醒圖片 (點擊放大)">` : ''}
+                            ${d.linkUrl ? `
+                                <div class="mb-4">
+                                    <a href="${d.linkUrl}" target="_blank" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-2.5 px-4 rounded-xl shadow-sm flex items-center justify-center gap-2 text-sm transition transform active:scale-95">
+                                        <i class="fa-solid fa-arrow-up-right-from-square"></i> 點擊開啟外部連結
+                                    </a>
+                                </div>
+                            ` : ''}
                         </div>
                         <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
                             <span>提醒時間：${d.dateStr || getTodayStr()}</span>
-                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-emerald-600 hover:text-emerald-800 underline font-black flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 點擊開啟連結</a>` : ''}
                         </div>
                     </div>
                 `;
