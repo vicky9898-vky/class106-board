@@ -130,7 +130,7 @@
             <div id="holidayBanner" class="hidden bg-white/90 text-center rounded-[2rem] p-8 text-slate-700 shadow-inner">
                 <div class="text-5xl mb-3">😴 🎈 🍦</div>
                 <h3 class="text-2xl font-black text-indigo-600 mb-2">今天放假，公休一天唷！</h3>
-                <p class="text-slate-500 font-bold text-sm">祝一年六班的小朋友與家長假期愉快，好好休養放鬆！</p>
+                <p class="text-slate-500 font-bold text-sm">祝一年六班的小朋友與家長假期愉快，好好休息放鬆！</p>
             </div>
 
             <!-- 聯絡本主要內容 -->
@@ -139,7 +139,7 @@
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">👕</span>
                         <div>
-                            <span class="text-xs font-bold text-indigo-400 block">明日穿著規定</span>
+                            <span class="text-xs font-bold text-indigo-400 block">今日穿著規定</span>
                             <span id="dressCodeText" class="font-black text-indigo-900 text-base">載入中...</span>
                         </div>
                     </div>
@@ -444,9 +444,9 @@
             const date = new Date(dateStr);
             const dayOfWeek = date.getDay(); 
             let codeText = "";
-            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "今日穿著「運動服」 (週一、週四需求)";
-            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "今日穿著「制服」 (週二、週五需求)";
-            else if (dayOfWeek === 3) codeText = "今日穿著「便服」 (週三需求)";
+            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "今日穿著「運動服」";
+            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "今日穿著「制服」";
+            else if (dayOfWeek === 3) codeText = "今日穿著「便服」";
             else if (dayOfWeek === 6 || dayOfWeek === 7) codeText = "今日為假日，在家放鬆免穿制服！";
 
             document.getElementById('dressCodeText').innerText = codeText;
