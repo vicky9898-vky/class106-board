@@ -42,9 +42,9 @@
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-amber-100 flex items-center justify-center text-2xl shadow-inner">🧸</div>
                 <div>
-                    <h1 class="text-xl font-black text-slate-800 tracking-wide">🧸勝利國小一年六班の佈告欄🧸</h1>
+                    <h1 class="text-xl font-black text-slate-800 tracking-wide">🧸勝利國小一年六班🧸</h1>
                     <p class="text-xs text-slate-500 font-bold flex items-center gap-2">
-                        <span>💬有任何問題都可以詢問旻慧老師唷！</span>
+                        <span>💬有任何問題都歡迎詢問旻慧老師唷!!</span>
                         <span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[10px] font-bold">🟢 雲端同步中</span>
                     </p>
                 </div>
@@ -139,7 +139,7 @@
                     <div class="flex items-center gap-3">
                         <span class="text-2xl">👕</span>
                         <div>
-                            <span class="text-xs font-bold text-indigo-400 block">今日穿著規定</span>
+                            <span class="text-xs font-bold text-indigo-400 block">今日服儀提醒</span>
                             <span id="dressCodeText" class="font-black text-indigo-900 text-base">載入中...</span>
                         </div>
                     </div>
@@ -171,21 +171,21 @@
             </div>
         </div>
 
-        <!-- 區塊2: 校內公告 -->
+        <!-- 區塊2: 校內公告 (已改為與教師提醒一樣的雙欄卡片排版) -->
         <div id="sec-announcement" class="tab-content hidden bg-amber-400 rounded-[2.5rem] p-6 text-white shadow-lg mb-8">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex justify-between items-center mb-4 pb-4 border-b border-white/30">
                 <div class="flex items-center gap-3">
-                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl backdrop-blur-sm">📣</div>
+                    <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm">📣</div>
                     <div>
-                        <h2 class="text-2xl font-black">校內重要公告</h2>
-                        <p class="text-xs text-amber-100 font-bold">處室重要通知與校園訊息</p>
+                        <h2 class="text-2xl font-black text-slate-800">校內重要公告</h2>
+                        <p class="text-xs text-amber-950 font-bold opacity-80">處室重要通知與校園訊息</p>
                     </div>
                 </div>
                 <button onclick="openNoticeModal('announcement')" class="admin-only bg-white text-amber-900 font-black px-4 py-2 rounded-2xl text-xs shadow-md hover:bg-amber-50">
                     ➕ 發布新公告
                 </button>
             </div>
-            <div id="announcementList" class="space-y-4"></div>
+            <div id="announcementList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
         </div>
 
         <!-- 區塊3: 旻慧老師的小提醒 -->
@@ -299,12 +299,12 @@
                     <label class="block text-xs font-bold text-slate-600 mb-1">🎨 選擇可愛卡片小圖示 Emoji</label>
                     <select id="noticeIcon" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
                         <option value="👟">👟 服裝</option>
-                        <option value="🎒">🎒 帶書包物品</option>
+                        <option value="🎒">🎒 帶物品</option>
                         <option value="🍱">🍱 午餐</option>
                         <option value="📚">📚 閱讀</option>
                         <option value="🎉">🎉 校園與班級活動</option>
-                        <option value="⚠️">⚠️ 重要事項</option>
-                        <option value="📢">📢 公告事項</option>
+                        <option value="⚠️">⚠️ 注意事項</option>
+                        <option value="📢">📢 一般事項</option>
                     </select>
                 </div>
 
@@ -319,18 +319,18 @@
                 
                 <!-- 本機檔案上傳區塊 -->
                 <div class="border-2 border-dashed border-emerald-200 p-3 rounded-2xl bg-emerald-50/50">
-                    <label class="block text-xs font-bold text-emerald-800 mb-2">🖼️ 附加圖片 (選擇上傳檔案 或 輸入網址)</label>
+                    <label class="block text-xs font-bold text-emerald-800 mb-2">🖼️ 附加圖片 (上傳圖片檔 或 貼上網址)</label>
                     <input type="file" id="noticeFileInput" accept="image/*" onchange="handleImageUpload(event)" class="w-full text-xs text-slate-500 font-bold file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-emerald-500 file:text-white hover:file:bg-emerald-600 mb-2">
                     <input type="url" id="noticeImgUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-1.5 text-xs font-bold" placeholder="或貼上網路圖片網址 (https://...)">
                     <div id="imgPreviewBox" class="hidden mt-2">
-                        <p class="text-[10px] text-slate-400 font-bold mb-1">圖片預覽：</p>
-                        <img id="imgPreview" src="" class="max-h-32 rounded-xl border border-slate-200 object-cover">
+                        <p class="text-[10px] text-slate-400 font-bold mb-1">圖片預覽（點擊可查看原圖）：</p>
+                        <img id="imgPreview" src="" onclick="viewImage(this.src)" class="max-h-32 rounded-xl border border-slate-200 object-cover cursor-pointer hover:opacity-80 transition">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">🔗 附加網址 (選填)</label>
-                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
+                    <label class="block text-xs font-bold text-slate-600 mb-1">🔗 附加外部連結網址 (選填，可供大家點閱)</label>
+                    <input type="url" id="noticeLinkUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold" placeholder="https://example.com">
                 </div>
                 <button onclick="saveNotice()" class="w-full bg-emerald-400 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl shadow">確認儲存發布</button>
             </div>
@@ -350,7 +350,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1">網站網址 (URL)</label>
-                    <input type="url" id="webUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold">
+                    <input type="url" id="webUrl" class="w-full border-2 border-slate-100 rounded-xl px-3 py-2 text-sm font-bold" placeholder="https://...">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-600 mb-1">選擇圖示 Emoji</label>
@@ -369,6 +369,11 @@
                 <button onclick="saveWebsite()" class="w-full bg-purple-500 hover:bg-purple-600 text-white font-black py-2.5 rounded-xl shadow">儲存網站資訊</button>
             </div>
         </div>
+    </div>
+
+    <!-- Modal 4: 大圖燈箱預覽 -->
+    <div id="imageLightbox" onclick="closeLightbox()" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50 cursor-pointer">
+        <img id="lightboxImg" src="" class="max-w-full max-h-[90vh] rounded-2xl shadow-2xl object-contain border-4 border-white">
     </div>
 
     <script>
@@ -409,7 +414,7 @@
             const password = document.getElementById('loginPassword').value;
             auth.signInWithEmailAndPassword(email, password)
                 .then(() => {
-                    alert("登入成功！已啟用管理員編輯權限。");
+                    alert("登入成功！已啟用管理員編輯權力。");
                     closeLoginModal();
                 })
                 .catch(error => alert("登入失敗：" + error.message));
@@ -420,7 +425,24 @@
         }
 
         const getTodayStr = () => new Date().toISOString().split('T')[0];
+        
+        // 初始載入當日
         document.getElementById('contactDatePicker').value = getTodayStr();
+
+        // 💡 自動跨日（00:00）計時器邏輯
+        function scheduleMidnightRefresh() {
+            const now = new Date();
+            const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1);
+            const timeUntilMidnight = midnight.getTime() - now.getTime();
+
+            setTimeout(() => {
+                const todayStr = getTodayStr();
+                document.getElementById('contactDatePicker').value = todayStr;
+                loadContactByDate(todayStr);
+                scheduleMidnightRefresh(); // 循環註冊下一個午夜
+            }, timeUntilMidnight);
+        }
+        scheduleMidnightRefresh();
 
         function switchCategory(cat) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.className = 'tab-btn p-3.5 rounded-3xl bg-white text-left flex items-center justify-between shadow-sm');
@@ -444,10 +466,10 @@
             const date = new Date(dateStr);
             const dayOfWeek = date.getDay(); 
             let codeText = "";
-            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "今日穿著「運動服」";
-            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "今日穿著「制服」";
-            else if (dayOfWeek === 3) codeText = "今日穿著「便服」";
-            else if (dayOfWeek === 6 || dayOfWeek === 7) codeText = "今日為假日，在家放鬆免穿制服！";
+            if (dayOfWeek === 1 || dayOfWeek === 4) codeText = "請穿著「運動服」";
+            else if (dayOfWeek === 2 || dayOfWeek === 5) codeText = "請穿著「制服」";
+            else if (dayOfWeek === 3) codeText = "請穿著「便服」";
+            else if (dayOfWeek === 6 || dayOfWeek === 7) codeText = "今日為假日，在家放鬆！"
 
             document.getElementById('dressCodeText').innerText = codeText;
         }
@@ -539,12 +561,23 @@
         }
 
         function showImgPreview(url) {
-            if (url) {
+            if (url && url.trim() !== '') {
                 document.getElementById('imgPreview').src = url;
                 document.getElementById('imgPreviewBox').classList.remove('hidden');
             } else {
                 document.getElementById('imgPreviewBox').classList.add('hidden');
             }
+        }
+
+        function viewImage(url) {
+            if (url) {
+                document.getElementById('lightboxImg').src = url;
+                document.getElementById('imageLightbox').classList.remove('hidden');
+            }
+        }
+
+        function closeLightbox() {
+            document.getElementById('imageLightbox').classList.add('hidden');
         }
 
         document.getElementById('noticeImgUrl').addEventListener('input', (e) => showImgPreview(e.target.value));
@@ -609,35 +642,37 @@
             }
         }
 
-        // 監聽校內公告
+        // 監聽校內公告 (已對齊教師提醒的雙欄樣式與佈局)
         db.collection('announcements').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
             const list = document.getElementById('announcementList');
-            if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm">目前無公告。</p>'; return; }
+            if (snapshot.empty) { list.innerHTML = '<p class="text-white/80 text-sm col-span-2">目前無公告。</p>'; return; }
             let html = '';
             snapshot.forEach(doc => {
                 const d = doc.data();
                 const id = doc.id;
                 html += `
-                    <div class="bg-white rounded-[2rem] p-5 text-slate-800 shadow-md relative hover:shadow-lg transition">
-                        <div class="flex justify-between items-start mb-3">
-                            <div class="flex items-center gap-2">
-                                <span class="text-2xl">${d.icon || '📢'}</span>
-                                <span class="bg-amber-100 text-amber-900 font-black text-xs px-3 py-1 rounded-full">${d.dept || '教務處'}</span>
-                                <h3 class="font-black text-slate-800 text-lg">${d.title}</h3>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="bg-rose-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm">NEW!</span>
-                                <div class="admin-only space-x-1">
-                                    <button onclick="openNoticeModal('announcement', '${id}')" class="text-xs bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️ 編輯</button>
-                                    <button onclick="deleteItem('announcements', '${id}')" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️ 刪除</button>
+                    <div class="bg-white rounded-[2rem] p-6 text-slate-800 shadow-md flex flex-col justify-between relative hover:shadow-lg transition">
+                        <div>
+                            <div class="flex justify-between items-center mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl">${d.icon || '📢'}</span>
+                                    <span class="bg-amber-100 text-amber-900 font-black text-xs px-2.5 py-0.5 rounded-full">${d.dept || '教務處'}</span>
+                                    <h3 class="font-black text-slate-800 text-lg tracking-wide">${d.title}</h3>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="bg-rose-500 text-white text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-sm">NEW!</span>
+                                    <div class="admin-only space-x-1">
+                                        <button onclick="openNoticeModal('announcement', '${id}')" class="text-xs bg-sky-100 hover:bg-sky-200 text-sky-700 font-bold px-2 py-1 rounded-lg">✏️ 編輯</button>
+                                        <button onclick="deleteItem('announcements', '${id}')" class="text-xs bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-2 py-1 rounded-lg">🗑️ 刪除</button>
+                                    </div>
                                 </div>
                             </div>
+                            <p class="text-sm font-bold text-slate-600 whitespace-pre-line leading-relaxed mb-4 pl-1">${d.content}</p>
+                            ${d.imgUrl ? `<img src="${d.imgUrl}" onclick="viewImage('${d.imgUrl}')" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover w-full cursor-pointer hover:opacity-90 transition" alt="公告圖片 (點擊放大)">` : ''}
                         </div>
-                        <p class="text-sm text-slate-600 font-bold whitespace-pre-line leading-relaxed mb-4 pl-8">${d.content}</p>
-                        ${d.imgUrl ? `<img src="${d.imgUrl}" class="max-h-64 rounded-2xl mb-3 border border-slate-100 object-cover" alt="公告圖片">` : ''}
-                        <div class="flex justify-between items-center text-xs text-slate-400 font-bold pt-2 border-t border-slate-100">
+                        <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
                             <span>提醒時間：${d.dateStr || getTodayStr()}</span>
-                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-sky-600 underline font-bold">🔗 點擊開啟連結</a>` : ''}
+                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-amber-600 hover:text-amber-800 underline font-black flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 點擊開啟連結</a>` : ''}
                         </div>
                     </div>
                 `;
@@ -670,10 +705,11 @@
                                 </div>
                             </div>
                             <p class="text-sm font-bold text-slate-600 whitespace-pre-line leading-relaxed mb-4 pl-1">${d.content}</p>
-                            ${d.imgUrl ? `<img src="${d.imgUrl}" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover w-full" alt="提醒圖片">` : ''}
+                            ${d.imgUrl ? `<img src="${d.imgUrl}" onclick="viewImage('${d.imgUrl}')" class="max-h-56 rounded-2xl mb-3 border border-slate-100 object-cover w-full cursor-pointer hover:opacity-90 transition" alt="提醒圖片 (點擊放大)">` : ''}
                         </div>
-                        <div class="text-right text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
-                            提醒時間：${d.dateStr || getTodayStr()}
+                        <div class="flex justify-between items-center text-xs text-slate-400 font-bold border-t border-slate-100 pt-3">
+                            <span>提醒時間：${d.dateStr || getTodayStr()}</span>
+                            ${d.linkUrl ? `<a href="${d.linkUrl}" target="_blank" class="text-emerald-600 hover:text-emerald-800 underline font-black flex items-center gap-1"><i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> 點擊開啟連結</a>` : ''}
                         </div>
                     </div>
                 `;
